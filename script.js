@@ -1694,6 +1694,30 @@ function showCard() {
   el('sessionProgress').textContent = `Card ${done + 1} of ${totalCards}`;
   el('sessionKnown').textContent = `${session.knownThisSession} known`;
   el('sessionUnknown').textContent = `${session.queue.length} remaining`;
+
+  // Resize card to fit the front face (question) now showing
+  requestAnimationFrame(() => resizeFlashcard(false));
+}
+
+/* Measures the natural height of whichever face should be visible
+   (front = false/showing question, back = true/showing answer) and
+   applies it to the .flashcard container so the layout below it
+   (Know/Don't Know buttons) never overlaps the card content. */
+function resizeFlashcard(showingBack) {
+  const fc = el('flashcard');
+  const front = document.querySelector('.card-front');
+  const back = document.querySelector('.card-back');
+  if (!fc || !front || !back) return;
+
+  const MIN_HEIGHT = 300;
+  const MAX_HEIGHT = Math.round(window.innerHeight * 0.7);
+
+  const target = showingBack ? back : front;
+  // scrollHeight reflects full content height even if currently clipped
+  const naturalHeight = target.scrollHeight;
+  const finalHeight = Math.min(Math.max(naturalHeight, MIN_HEIGHT), MAX_HEIGHT);
+
+  fc.style.height = finalHeight + 'px';
 }
 
 function revealCard() {
@@ -1704,6 +1728,8 @@ function revealCard() {
 
   const fc = el('flashcard');
   if (fc) fc.classList.add('flipped');
+
+  requestAnimationFrame(() => resizeFlashcard(true));
 }
 
 const EXPLAIN_ICON_SHOW = '<svg viewBox="0 0 24 24"><path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"/></svg>';
@@ -1725,6 +1751,8 @@ function toggleExplain() {
   explainEl.classList.toggle('hidden', !isHidden);
   explainBtn.classList.toggle('expanded', isHidden);
   setExplainButtonLabel(isHidden);
+
+  requestAnimationFrame(() => resizeFlashcard(true));
 }
 
 function markKnow() {
@@ -3113,3 +3141,12 @@ function updateStudySidebar() {
     readinessBadge.className = 'side-readiness-badge ' + readiness.badge;
   }
 }
+
+/* Recompute flashcard height on viewport resize (orientation change, etc.) */
+window.addEventListener('resize', () => {
+  if (!session || session.queue.length === 0) return;
+  const fc = el('flashcard');
+  if (!fc) return;
+  const isFlipped = fc.classList.contains('flipped');
+  resizeFlashcard(isFlipped);
+});
