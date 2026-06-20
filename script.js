@@ -2504,6 +2504,9 @@ showCard = function() {
   // Ensure card is face-up when new card shown
   const fc = el('flashcard');
   if (fc) fc.classList.remove('flipped');
+
+  // Update live study sidebar
+  updateStudySidebar();
 };
 
 /* ═══════════════════════════════════════════════════
@@ -3018,3 +3021,95 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+/* ═══════════════════════════════════════════════════
+   STUDY SIDEBAR — live stats while studying
+═══════════════════════════════════════════════════ */
+function drawTier1Ring(pctValue) {
+  const canvas = el('sideTier1Ring');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = 92, H = 92, cx = W / 2, cy = H / 2, r = 38, lineW = 9;
+
+  ctx.clearRect(0, 0, W, H);
+
+  const isDark = document.body.classList.contains('dark');
+  const trackColor = isDark ? '#2D3148' : '#E2E5EB';
+
+  // Background track
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+  ctx.strokeStyle = trackColor;
+  ctx.lineWidth = lineW;
+  ctx.stroke();
+
+  // Progress arc
+  if (pctValue > 0) {
+    const startAngle = -Math.PI / 2;
+    const endAngle = startAngle + (pctValue / 100) * 2 * Math.PI;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, startAngle, endAngle);
+    ctx.strokeStyle = '#7C3AED';
+    ctx.lineWidth = lineW;
+    ctx.lineCap = 'round';
+    ctx.stroke();
+  }
+}
+
+function updateStudySidebar() {
+  const sideCol = el('studySideCol');
+  if (!sideCol) return; // not on study session view
+
+  const stats = computeStats();
+  const readiness = computeReadiness(stats);
+
+  // Tier 1 ring
+  drawTier1Ring(readiness.t1Pct);
+  const t1Label = el('sideTier1Label');
+  if (t1Label) t1Label.textContent = readiness.t1Pct + '%';
+  const t1Sub = el('sideTier1Sub');
+  if (t1Sub) t1Sub.textContent = `${stats.t1Known} / ${stats.t1Total} cards`;
+
+  // Exam trap mastery
+  const trapBar = el('sideTrapBar');
+  if (trapBar) trapBar.style.width = readiness.trapPct + '%';
+  const trapSub = el('sideTrapSub');
+  if (trapSub) trapSub.textContent = `${stats.trapKnown} / ${stats.trapCards.length} known`;
+
+  // Session stats
+  if (session) {
+    const sKnown = el('sideSessionKnown');
+    if (sKnown) sKnown.textContent = session.knownThisSession || 0;
+    const sStreak = el('sideSessionStreak');
+    if (sStreak) sStreak.textContent = session.currentStreak || 0;
+    const sRemaining = el('sideSessionRemaining');
+    if (sRemaining) sRemaining.textContent = session.queue ? session.queue.length : 0;
+  }
+
+  // Weakest decks (lowest mastery %, only decks with progress)
+  const deckEntries = Object.entries(stats.decks)
+    .map(([name, d]) => ({ name, ...d, pct: pct(d.known, d.total) }))
+    .filter(d => d.total > 0)
+    .sort((a, b) => a.pct - b.pct)
+    .slice(0, 4);
+
+  const deckList = el('sideDeckList');
+  if (deckList) {
+    deckList.innerHTML = deckEntries.map(d => `
+      <div class="side-deck-item">
+        <span class="side-deck-name">${escHtml(d.name)}</span>
+        <div class="side-deck-bar-row">
+          <div class="progress-bar-track"><div class="progress-bar-fill" style="width:${d.pct}%"></div></div>
+          <span class="side-deck-pct">${d.pct}%</span>
+        </div>
+      </div>
+    `).join('') || '<div class="side-panel-sub">No data yet</div>';
+  }
+
+  // Readiness badge
+  const readinessBadge = el('sideReadinessBadge');
+  if (readinessBadge) {
+    readinessBadge.textContent = readiness.label;
+    readinessBadge.className = 'side-readiness-badge ' + readiness.badge;
+  }
+}

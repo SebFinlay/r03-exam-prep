@@ -296,60 +296,118 @@
           <div class="session-progress-fill" id="sessionProgressFill" style="width:0%"></div>
         </div>
 
-        <!-- Flashcard with flip -->
-        <div class="card-container" id="cardContainer">
-          <div class="card-scene">
-            <div class="flashcard" id="flashcard" role="button" tabindex="0" aria-label="Click to reveal answer">
-              <!-- Front -->
-              <div class="card-face card-front">
-                <div class="card-meta" id="cardMeta"></div>
-                <div class="card-question" id="cardQuestion"></div>
-                <div class="card-actions-row">
-                  <button class="btn-bookmark-card" id="btnBookmarkCard" title="Bookmark this card (B)">
-                    <svg id="bookmarkIcon" viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
-                  </button>
-                  <div class="card-reveal-hint" id="revealHint">
-                    <span>Click to reveal</span><kbd>Space</kbd>
+        <div class="study-layout">
+          <!-- Left: flashcard column -->
+          <div class="study-main-col">
+            <!-- Flashcard with flip -->
+            <div class="card-container" id="cardContainer">
+              <div class="card-scene">
+                <div class="flashcard" id="flashcard" role="button" tabindex="0" aria-label="Click to reveal answer">
+                  <!-- Front -->
+                  <div class="card-face card-front">
+                    <div class="card-meta" id="cardMeta"></div>
+                    <div class="card-question" id="cardQuestion"></div>
+                    <div class="card-actions-row">
+                      <button class="btn-bookmark-card" id="btnBookmarkCard" title="Bookmark this card (B)">
+                        <svg id="bookmarkIcon" viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
+                      </button>
+                      <div class="card-reveal-hint" id="revealHint">
+                        <span>Click to reveal</span><kbd>Space</kbd>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Back -->
+                  <div class="card-face card-back">
+                    <div class="card-meta-back" id="cardMetaBack"></div>
+                    <div class="card-question-back" id="cardQuestionBack"></div>
+                    <div class="card-answer" id="cardAnswer"></div>
+                    <button class="btn-show-explain" id="btnShowExplain" type="button">
+                      <svg viewBox="0 0 24 24"><path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"/></svg>
+                      Show explanation
+                    </button>
+                    <div class="card-explain hidden" id="cardExplain"></div>
                   </div>
                 </div>
               </div>
-              <!-- Back -->
-              <div class="card-face card-back">
-                <div class="card-meta-back" id="cardMetaBack"></div>
-                <div class="card-question-back" id="cardQuestionBack"></div>
-                <div class="card-answer" id="cardAnswer"></div>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="card-actions hidden" id="cardActions">
+              <button class="btn btn-dont-know" id="btnDontKnow">
+                <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                Don't Know <kbd>D</kbd>
+              </button>
+              <button class="btn btn-know" id="btnKnow">
+                <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                Know <kbd>K</kbd>
+              </button>
+            </div>
+
+            <!-- Session complete -->
+            <div class="session-complete hidden" id="sessionComplete">
+              <div class="complete-icon" id="completeIcon">🎉</div>
+              <h2 class="complete-title">Session Complete!</h2>
+              <p class="complete-subtitle" id="completeSubtitle"></p>
+              <div class="complete-stats" id="completeStats"></div>
+              <!-- Weak cards from this session -->
+              <div class="session-weak-panel" id="sessionWeakPanel">
+                <h3 class="session-weak-title">Cards to revisit</h3>
+                <div class="session-weak-list" id="sessionWeakList"></div>
+              </div>
+              <div class="complete-actions">
+                <button class="btn btn-primary" id="restartSession">Study Again</button>
+                <button class="btn btn-ghost" id="btnGoToDashboard">Back to Dashboard</button>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Action buttons -->
-        <div class="card-actions hidden" id="cardActions">
-          <button class="btn btn-dont-know" id="btnDontKnow">
-            <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-            Don't Know <kbd>D</kbd>
-          </button>
-          <button class="btn btn-know" id="btnKnow">
-            <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-            Know <kbd>K</kbd>
-          </button>
-        </div>
+          <!-- Right: live stats sidebar (desktop only) -->
+          <aside class="study-side-col" id="studySideCol">
+            <div class="side-panel">
+              <div class="side-panel-title">Tier 1 Mastery</div>
+              <div class="side-ring-wrap">
+                <canvas id="sideTier1Ring" width="92" height="92"></canvas>
+                <div class="side-ring-label" id="sideTier1Label">0%</div>
+              </div>
+              <div class="side-panel-sub" id="sideTier1Sub">0 / 0 cards</div>
+            </div>
 
-        <!-- Session complete -->
-        <div class="session-complete hidden" id="sessionComplete">
-          <div class="complete-icon" id="completeIcon">🎉</div>
-          <h2 class="complete-title">Session Complete!</h2>
-          <p class="complete-subtitle" id="completeSubtitle"></p>
-          <div class="complete-stats" id="completeStats"></div>
-          <!-- Weak cards from this session -->
-          <div class="session-weak-panel" id="sessionWeakPanel">
-            <h3 class="session-weak-title">Cards to revisit</h3>
-            <div class="session-weak-list" id="sessionWeakList"></div>
-          </div>
-          <div class="complete-actions">
-            <button class="btn btn-primary" id="restartSession">Study Again</button>
-            <button class="btn btn-ghost" id="btnGoToDashboard">Back to Dashboard</button>
-          </div>
+            <div class="side-panel">
+              <div class="side-panel-title">⚠ Exam Trap Mastery</div>
+              <div class="progress-bar-track">
+                <div class="progress-bar-fill trap-fill" id="sideTrapBar" style="width:0%"></div>
+              </div>
+              <div class="side-panel-sub" id="sideTrapSub">0 / 0 known</div>
+            </div>
+
+            <div class="side-panel">
+              <div class="side-panel-title">This Session</div>
+              <div class="side-session-stats">
+                <div class="side-stat">
+                  <span class="side-stat-num" id="sideSessionKnown">0</span>
+                  <span class="side-stat-label">Known</span>
+                </div>
+                <div class="side-stat">
+                  <span class="side-stat-num" id="sideSessionStreak">0</span>
+                  <span class="side-stat-label">Streak</span>
+                </div>
+                <div class="side-stat">
+                  <span class="side-stat-num" id="sideSessionRemaining">0</span>
+                  <span class="side-stat-label">Left</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="side-panel">
+              <div class="side-panel-title">Weakest Decks</div>
+              <div class="side-deck-list" id="sideDeckList"></div>
+            </div>
+
+            <div class="side-panel side-readiness-panel">
+              <div class="side-panel-title">Pass Readiness</div>
+              <div class="side-readiness-badge" id="sideReadinessBadge">Not Ready</div>
+            </div>
+          </aside>
         </div>
       </div>
     </div>
@@ -418,6 +476,8 @@
           <div class="card-detail-question" id="cardDetailQuestion"></div>
           <div class="card-detail-divider"></div>
           <div class="card-detail-answer" id="cardDetailAnswer"></div>
+          <div class="card-detail-explain-label">Explanation</div>
+          <div class="card-detail-explain" id="cardDetailExplain"></div>
           <div class="card-detail-status-row">
             <button class="btn btn-sm btn-ghost" id="detailMarkUnknown">Mark Unknown</button>
             <button class="btn btn-sm btn-know" id="detailMarkKnown">Mark Known</button>
