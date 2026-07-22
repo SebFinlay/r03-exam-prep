@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="CII R03 Personal Taxation — Exam Preparation Platform" />
+  <title>R03 Exam Prep</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+</head>
+<body class="light">
+
+  <!-- ═══ AUTH GATE ═══ -->
+  <div class="auth-gate" id="authGate">
+    <div class="auth-card">
+      <div class="auth-brand">
+        <div class="brand-icon brand-icon-lg">R03</div>
+        <h1 class="auth-title">R03 Exam Prep</h1>
+        <p class="auth-subtitle">Personal Taxation — Sign in to sync your progress across all your devices</p>
+      </div>
+
+      <button class="btn-google-signin" id="btnGoogleSignIn">
+        <svg viewBox="0 0 48 48" width="20" height="20">
+          <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12s5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/>
+          <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/>
+          <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/>
+          <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/>
+        </svg>
+        Continue with Google
+      </button>
+
+      <div class="auth-divider"><span>or</span></div>
+
+      <button class="btn btn-secondary auth-offline-btn" id="btnContinueOffline">
+        Continue without an account
+      </button>
+      <p class="auth-offline-note">Your progress will only be saved on this device.</p>
+
+      <div class="auth-status hidden" id="authStatus"></div>
+    </div>
+  </div>
+
+  <!-- ═══ SIDEBAR ═══ -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">R03</div>
+      <div class="brand-text">
+        <span class="brand-title">Exam Prep</span>
+        <span class="brand-sub">Personal Taxation</span>
+      </div>
+    </div>
+
+    <!-- Account panel -->
+    <div class="account-panel" id="accountPanel">
+      <div class="account-avatar" id="accountAvatar">?</div>
+      <div class="account-info">
+        <div class="account-email" id="accountEmail">Not signed in</div>
+        <div class="account-sync-status" id="accountSyncStatus">Local only</div>
+      </div>
+      <button class="account-action-btn" id="accountActionBtn" title="Sign in">
+        <svg viewBox="0 0 24 24"><path d="M11 7L9.6 8.4l2.6 2.6H2v2h10.2l-2.6 2.6L11 17l5-5-5-5zm9 12h-8v2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-8v2h8v14z"/></svg>
+      </button>
+    </div>
+
+    <div class="sidebar-section-label">Study</div>
+    <button class="nav-btn active" data-view="dashboard">
+      <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+      Dashboard
+    </button>
+    <button class="nav-btn" data-view="study">
+      <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+      Study Cards
+    </button>
+    <button class="nav-btn" data-view="browser">
+      <svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z"/></svg>
+      Card Browser
+    </button>
+    <button class="nav-btn" data-view="analytics">
+      <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+      Analytics
+    </button>
+    <button class="nav-btn" data-view="guide">
+      <svg viewBox="0 0 24 24"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>
+      Study Guide
+    </button>
+
+    <div class="sidebar-section-label">Data</div>
+    <button class="nav-btn" data-view="settings">
+      <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+      Settings
+    </button>
+
+    <div class="sidebar-bottom">
+      <button class="theme-toggle" id="themeToggle" title="Toggle dark/light mode">
+        <svg class="icon-sun" viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-12.37l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0zM7.05 18.36l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06c.39-.39.39-1.03 0-1.41s-1.03 0-1.41 0z"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
+        <span class="theme-label">Dark Mode</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile nav toggle -->
+  <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="overlay" id="overlay"></div>
+
+  <!-- ═══ TOAST NOTIFICATION ═══ -->
+  <div class="toast hidden" id="toast">
+    <span class="toast-icon" id="toastIcon">🏆</span>
+    <div class="toast-body">
+      <div class="toast-title" id="toastTitle"></div>
+      <div class="toast-desc" id="toastDesc"></div>
+    </div>
+  </div>
+
+  <!-- ═══ MAIN CONTENT ═══ -->
+  <main class="main" id="main">
+
+    <!-- ─── DASHBOARD ─── -->
+    <div id="view-dashboard" class="view active">
+      <div class="view-header">
+        <h1 class="view-title">Dashboard</h1>
+        <p class="view-subtitle">Your R03 exam readiness at a glance</p>
+      </div>
+
+      <!-- Streak + Estimate bar -->
+      <div class="meta-bar" id="metaBar">
+        <div class="streak-display" id="streakDisplay">
+          <span class="streak-flame">🔥</span>
+          <span class="streak-count" id="streakCount">0</span>
+          <span class="streak-label">day streak</span>
+        </div>
+        <div class="estimate-display" id="estimateDisplay">
+          <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
+          <span id="estimateText">Calculate after studying more cards</span>
+        </div>
+      </div>
+
+      <!-- Pass Readiness Banner -->
+      <div class="readiness-banner" id="readinessBanner">
+        <div class="readiness-status">
+          <div class="readiness-badge" id="readinessBadge">Not Ready</div>
+          <div class="readiness-detail" id="readinessDetail">Complete more Tier 1 cards to improve your readiness.</div>
+        </div>
+        <div class="readiness-meter">
+          <div class="readiness-label">Tier 1 Mastery</div>
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" id="t1ProgressBar" style="width:0%"></div>
+          </div>
+          <div class="readiness-pct" id="t1Pct">0%</div>
+        </div>
+      </div>
+
+      <!-- Stats row -->
+      <div class="stats-grid stats-grid-5">
+        <div class="stat-card">
+          <div class="stat-value" id="statTotal">0</div>
+          <div class="stat-label">Total Cards</div>
+        </div>
+        <div class="stat-card stat-known">
+          <div class="stat-value" id="statKnown">0</div>
+          <div class="stat-label">Known</div>
+        </div>
+        <div class="stat-card stat-unknown">
+          <div class="stat-value" id="statUnknown">0</div>
+          <div class="stat-label">Still Learning</div>
+        </div>
+        <div class="stat-card stat-unseen">
+          <div class="stat-value" id="statUnseen">0</div>
+          <div class="stat-label">Not Yet Seen</div>
+        </div>
+        <div class="stat-card stat-pct">
+          <div class="stat-value" id="statPct">0%</div>
+          <div class="stat-label">Complete</div>
+        </div>
+      </div>
+
+      <!-- Exam Trap + Tier 1 -->
+      <div class="two-col-grid">
+        <div class="panel">
+          <h2 class="panel-title"><span class="panel-icon trap-icon">⚠</span>Exam Trap Performance</h2>
+          <div class="trap-stats">
+            <div class="mini-stat"><span id="trapKnown">0</span><span>Known</span></div>
+            <div class="mini-stat"><span id="trapUnknown">0</span><span>Unknown</span></div>
+            <div class="mini-stat"><span id="trapTotal">0</span><span>Total</span></div>
+          </div>
+          <div class="progress-bar-track mt-sm">
+            <div class="progress-bar-fill trap-fill" id="trapBar" style="width:0%"></div>
+          </div>
+          <div class="pct-label" id="trapPct">0% mastery</div>
+        </div>
+        <div class="panel">
+          <h2 class="panel-title"><span class="panel-icon tier-icon">★</span>Tier Mastery</h2>
+          <div class="tier-list" id="tierList"></div>
+        </div>
+      </div>
+
+      <!-- Recommendations -->
+      <div class="panel">
+        <h2 class="panel-title">
+          <svg class="panel-svg" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+          Study Recommendations
+        </h2>
+        <p class="panel-desc">Focus on these next to maximise your exam performance.</p>
+        <div class="reco-list" id="recoList"></div>
+        <button class="btn btn-primary mt-sm" data-view="study" data-mode="quick">Start Quick Pass Session →</button>
+      </div>
+
+      <!-- Revision guide progress -->
+      <div class="panel guide-progress-panel">
+        <div class="guide-progress-head">
+          <div>
+            <h2 class="panel-title">Revision Guide</h2>
+            <p class="panel-desc">Read the full syllabus in plain English, then test yourself on the cards.</p>
+          </div>
+          <button class="btn btn-primary" data-view="guide">Open the guide →</button>
+        </div>
+        <div class="guide-progress-meter">
+          <div class="guide-progress-label"><span id="guideReadCount">0</span> of 12 sections read</div>
+          <div class="progress-bar-track"><div class="progress-bar-fill" id="guideReadBar" style="width:0%"></div></div>
+        </div>
+      </div>
+
+      <!-- Section breakdown -->
+      <div class="panel">
+        <h2 class="panel-title">Performance by Section</h2>
+        <p class="panel-desc">Click any section to jump straight into its flashcards.</p>
+        <div class="section-breakdown" id="sectionBreakdown"></div>
+      </div>
+    </div>
+
+    <!-- ─── STUDY VIEW ─── -->
+    <div id="view-study" class="view">
+      <div id="study-mode-selector">
+        <div class="view-header">
+          <h1 class="view-title">Study Cards</h1>
+          <p class="view-subtitle">Choose a study mode to begin</p>
+        </div>
+        <div class="mode-grid">
+          <button class="mode-card" data-mode="all">
+            <div class="mode-icon">📚</div>
+            <div class="mode-name">Study All</div>
+            <div class="mode-desc">Review every card in the deck</div>
+          </button>
+          <button class="mode-card" data-mode="unseen">
+            <div class="mode-icon">👁</div>
+            <div class="mode-name">Unseen Only</div>
+            <div class="mode-desc">Cards you haven't seen yet</div>
+            <div class="mode-count" id="unseenModeCount"></div>
+          </button>
+          <button class="mode-card" data-mode="unknown">
+            <div class="mode-icon">🔴</div>
+            <div class="mode-name">Unknown Only</div>
+            <div class="mode-desc">Cards you haven't mastered yet</div>
+          </button>
+          <button class="mode-card" data-mode="tier1">
+            <div class="mode-icon">★</div>
+            <div class="mode-name">Tier 1 Essentials</div>
+            <div class="mode-desc">Essential pass knowledge only</div>
+          </button>
+          <button class="mode-card" data-mode="traps">
+            <div class="mode-icon">⚠</div>
+            <div class="mode-name">Exam Traps</div>
+            <div class="mode-desc">Common mistakes &amp; trick areas</div>
+          </button>
+          <button class="mode-card" data-mode="bookmarks">
+            <div class="mode-icon">🔖</div>
+            <div class="mode-name">Bookmarked</div>
+            <div class="mode-desc">Cards you've flagged for review</div>
+            <div class="mode-count" id="bookmarkModeCount"></div>
+          </button>
+          <button class="mode-card" data-mode="quick">
+            <div class="mode-icon">⚡</div>
+            <div class="mode-name">Quick Pass Mode</div>
+            <div class="mode-desc">Cards not yet marked Known</div>
+          </button>
+          <button class="mode-card" data-mode="mock">
+            <div class="mode-icon">📝</div>
+            <div class="mode-name">Mock Exam Revision</div>
+            <div class="mode-desc">Prioritises Tier 1, traps &amp; unknowns</div>
+          </button>
+        </div>
+
+        <!-- Deck filter -->
+        <div class="panel mt-md">
+          <h2 class="panel-title">Filter by Deck</h2>
+          <div class="deck-filter-grid" id="deckFilterGrid"></div>
+          <div class="filter-actions">
+            <button class="btn btn-ghost" id="selectAllDecks">Select All</button>
+            <button class="btn btn-ghost" id="clearAllDecks">Clear All</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active study session -->
+      <div id="study-session" class="hidden">
+        <div class="session-header">
+          <button class="btn btn-ghost btn-sm" id="exitSession">← Back</button>
+          <div class="session-meta">
+            <span id="sessionMode" class="session-tag"></span>
+            <span id="sessionProgress" class="session-progress"></span>
+          </div>
+          <div class="session-stats-mini">
+            <span class="streak-inline hidden" id="sessionStreak">🔥 0</span>
+            <span class="known-count" id="sessionKnown">0 known</span>
+            <span class="unknown-count" id="sessionUnknown">0 remaining</span>
+          </div>
+          <button class="btn btn-ghost btn-sm btn-undo hidden" id="btnUndo" title="Undo last decision (U)">
+            <svg viewBox="0 0 24 24"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
+            Undo <kbd>U</kbd>
+          </button>
+        </div>
+
+        <div class="session-progress-bar">
+          <div class="session-progress-fill" id="sessionProgressFill" style="width:0%"></div>
+        </div>
+
+        <div class="study-layout">
+          <!-- Left: flashcard column -->
+          <div class="study-main-col">
+            <!-- Flashcard with flip -->
+            <div class="card-container" id="cardContainer">
+              <div class="card-scene">
+                <div class="flashcard" id="flashcard" role="button" tabindex="0" aria-label="Click to reveal answer">
+                  <!-- Front -->
+                  <div class="card-face card-front">
+                    <div class="card-meta" id="cardMeta"></div>
+                    <div class="card-question" id="cardQuestion"></div>
+                    <div class="card-actions-row">
+                      <button class="btn-bookmark-card" id="btnBookmarkCard" title="Bookmark this card (B)">
+                        <svg id="bookmarkIcon" viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
+                      </button>
+                      <div class="card-reveal-hint" id="revealHint">
+                        <span>Click to reveal</span><kbd>Space</kbd>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Back -->
+                  <div class="card-face card-back">
+                    <div class="card-meta-back" id="cardMetaBack"></div>
+                    <div class="card-question-back" id="cardQuestionBack"></div>
+                    <div class="card-answer" id="cardAnswer"></div>
+                    <button class="btn-show-explain" id="btnShowExplain" type="button">
+                      <svg viewBox="0 0 24 24"><path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"/></svg>
+                      Show explanation
+                    </button>
+                    <div class="card-explain hidden" id="cardExplain"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="card-actions hidden" id="cardActions">
+              <button class="btn btn-dont-know" id="btnDontKnow">
+                <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                Don't Know <kbd>D</kbd>
+              </button>
+              <button class="btn btn-know" id="btnKnow">
+                <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                Know <kbd>K</kbd>
+              </button>
+            </div>
+
+            <!-- Session complete -->
+            <div class="session-complete hidden" id="sessionComplete">
+              <div class="complete-icon" id="completeIcon">🎉</div>
+              <h2 class="complete-title">Session Complete!</h2>
+              <p class="complete-subtitle" id="completeSubtitle"></p>
+              <div class="complete-stats" id="completeStats"></div>
+              <!-- Weak cards from this session -->
+              <div class="session-weak-panel" id="sessionWeakPanel">
+                <h3 class="session-weak-title">Cards to revisit</h3>
+                <div class="session-weak-list" id="sessionWeakList"></div>
+              </div>
+              <div class="complete-actions">
+                <button class="btn btn-primary" id="restartSession">Study Again</button>
+                <button class="btn btn-ghost" id="btnGoToDashboard">Back to Dashboard</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: live stats sidebar (desktop only) -->
+          <aside class="study-side-col" id="studySideCol">
+            <div class="side-panel">
+              <div class="side-panel-title">Tier 1 Mastery</div>
+              <div class="side-ring-wrap">
+                <canvas id="sideTier1Ring" width="92" height="92"></canvas>
+                <div class="side-ring-label" id="sideTier1Label">0%</div>
+              </div>
+              <div class="side-panel-sub" id="sideTier1Sub">0 / 0 cards</div>
+            </div>
+
+            <div class="side-panel">
+              <div class="side-panel-title">⚠ Exam Trap Mastery</div>
+              <div class="progress-bar-track">
+                <div class="progress-bar-fill trap-fill" id="sideTrapBar" style="width:0%"></div>
+              </div>
+              <div class="side-panel-sub" id="sideTrapSub">0 / 0 known</div>
+            </div>
+
+            <div class="side-panel">
+              <div class="side-panel-title">This Session</div>
+              <div class="side-session-stats">
+                <div class="side-stat">
+                  <span class="side-stat-num" id="sideSessionKnown">0</span>
+                  <span class="side-stat-label">Known</span>
+                </div>
+                <div class="side-stat">
+                  <span class="side-stat-num" id="sideSessionStreak">0</span>
+                  <span class="side-stat-label">Streak</span>
+                </div>
+                <div class="side-stat">
+                  <span class="side-stat-num" id="sideSessionRemaining">0</span>
+                  <span class="side-stat-label">Left</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="side-panel">
+              <div class="side-panel-title">Weakest Decks</div>
+              <div class="side-deck-list" id="sideDeckList"></div>
+            </div>
+
+            <div class="side-panel side-readiness-panel">
+              <div class="side-panel-title">Pass Readiness</div>
+              <div class="side-readiness-badge" id="sideReadinessBadge">Not Ready</div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── CARD BROWSER VIEW ─── -->
+    <div id="view-browser" class="view">
+      <div class="view-header">
+        <h1 class="view-title">Card Browser</h1>
+        <p class="view-subtitle">Browse, search and filter all 165 cards</p>
+      </div>
+
+      <!-- Search + filters -->
+      <div class="browser-controls panel">
+        <div class="search-wrap">
+          <svg class="search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+          <input type="text" id="browserSearch" class="search-input" placeholder="Search questions and answers…" autocomplete="off" />
+          <button class="search-clear hidden" id="searchClear">×</button>
+        </div>
+        <div class="browser-filters">
+          <select id="filterStatus" class="filter-select">
+            <option value="all">All status</option>
+            <option value="unseen">Unseen</option>
+            <option value="unknown">Unknown</option>
+            <option value="known">Known</option>
+            <option value="bookmarked">Bookmarked</option>
+          </select>
+          <select id="filterTier" class="filter-select">
+            <option value="all">All tiers</option>
+            <option value="Tier 1">Tier 1</option>
+            <option value="Tier 2">Tier 2</option>
+            <option value="Tier 3">Tier 3</option>
+          </select>
+          <select id="filterCategory" class="filter-select">
+            <option value="all">All categories</option>
+            <option value="Common Exam Trap">Exam Traps</option>
+            <option value="Tax Rule">Tax Rule</option>
+            <option value="Calculation">Calculation</option>
+            <option value="Comparison">Comparison</option>
+            <option value="Process">Process</option>
+            <option value="Definition">Definition</option>
+            <option value="Principle">Principle</option>
+            <option value="Exception">Exception</option>
+          </select>
+          <select id="filterSection" class="filter-select">
+            <option value="all">All sections</option>
+          </select>
+        </div>
+        <div class="browser-result-count" id="browserResultCount">165 cards</div>
+      </div>
+
+      <!-- Card list -->
+      <div class="browser-list" id="browserList"></div>
+
+      <!-- Card detail panel (slide-in) -->
+      <div class="card-detail-backdrop hidden" id="cardDetailBackdrop">
+        <div class="card-detail-panel" id="cardDetailPanel">
+          <div class="card-detail-header">
+            <div class="card-detail-meta" id="cardDetailMeta"></div>
+            <div class="card-detail-actions">
+              <button class="btn-bookmark-detail" id="btnBookmarkDetail" title="Bookmark">
+                <svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
+              </button>
+              <button class="card-detail-close" id="cardDetailClose">×</button>
+            </div>
+          </div>
+          <div class="card-detail-question" id="cardDetailQuestion"></div>
+          <div class="card-detail-divider"></div>
+          <div class="card-detail-answer" id="cardDetailAnswer"></div>
+          <div class="card-detail-explain-label">Explanation</div>
+          <div class="card-detail-explain" id="cardDetailExplain"></div>
+          <div class="card-detail-status-row">
+            <button class="btn btn-sm btn-ghost" id="detailMarkUnknown">Mark Unknown</button>
+            <button class="btn btn-sm btn-know" id="detailMarkKnown">Mark Known</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── ANALYTICS VIEW ─── -->
+    <div id="view-analytics" class="view">
+      <div class="view-header">
+        <h1 class="view-title">Analytics</h1>
+        <p class="view-subtitle">Deep dive into your performance</p>
+      </div>
+
+      <div class="analytics-top">
+        <div class="panel donut-panel">
+          <h2 class="panel-title">Overall Completion</h2>
+          <div class="donut-wrap">
+            <canvas id="donutChart" width="200" height="200"></canvas>
+            <div class="donut-center">
+              <div class="donut-pct" id="donutPct">0%</div>
+              <div class="donut-sub">complete</div>
+            </div>
+          </div>
+          <div class="donut-legend">
+            <div class="legend-item"><span class="dot dot-known"></span>Known</div>
+            <div class="legend-item"><span class="dot dot-unknown"></span>Unknown</div>
+            <div class="legend-item"><span class="dot dot-unseen"></span>Unseen</div>
+          </div>
+        </div>
+        <div class="panel">
+          <h2 class="panel-title">Tier Performance</h2>
+          <div class="tier-bars" id="tierBars"></div>
+          <h2 class="panel-title mt-md">Category Performance</h2>
+          <div class="cat-bars" id="catBars"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2 class="panel-title">Section Breakdown</h2>
+        <div class="analytics-table-wrap">
+          <table class="analytics-table">
+            <thead>
+              <tr>
+                <th>Section</th><th>Total</th><th>Known</th><th>Unknown</th><th>Unseen</th><th>Mastery</th>
+              </tr>
+            </thead>
+            <tbody id="analyticsTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2 class="panel-title">Weakest Areas</h2>
+        <p class="panel-desc">Cards you've answered incorrectly most often.</p>
+        <div class="weak-list" id="weakList"></div>
+      </div>
+    </div>
+
+    <!-- ─── STUDY GUIDE VIEW ─── -->
+    <div id="view-guide" class="view">
+      <div class="view-header">
+        <h1 class="view-title">Study Guide</h1>
+        <p class="view-subtitle">The full R03 syllabus condensed for revision — 2026/27 tax year</p>
+      </div>
+
+      <nav class="guide-toc" id="guideToc" aria-label="Guide sections">
+        <a href="#gs-1" class="guide-toc-link" data-gs="gs-1">1 · Income Tax</a>
+        <a href="#gs-2" class="guide-toc-link" data-gs="gs-2">2 · NICs</a>
+        <a href="#gs-3" class="guide-toc-link" data-gs="gs-3">3 · CGT</a>
+        <a href="#gs-4" class="guide-toc-link" data-gs="gs-4">4 · IHT</a>
+        <a href="#gs-5" class="guide-toc-link" data-gs="gs-5">5 · Residence</a>
+        <a href="#gs-6" class="guide-toc-link" data-gs="gs-6">6 · Self Assessment</a>
+        <a href="#gs-7" class="guide-toc-link" data-gs="gs-7">7 · Stamp Duties</a>
+        <a href="#gs-8" class="guide-toc-link" data-gs="gs-8">8 · VAT &amp; CT</a>
+        <a href="#gs-9" class="guide-toc-link" data-gs="gs-9">9 · Direct Investments</a>
+        <a href="#gs-10" class="guide-toc-link" data-gs="gs-10">10 · Indirect Investments</a>
+        <a href="#gs-11" class="guide-toc-link" data-gs="gs-11">11 · Trusts</a>
+        <a href="#gs-12" class="guide-toc-link" data-gs="gs-12">12 · Tax Planning</a>
+      </nav>
+
+      <div class="guide-body">
+
+        <section class="gd-section" id="gs-1">
+          <h2 class="gd-title"><span class="gd-num">1</span>Income Tax</h2>
+
+          <h3 class="gd-sub">The shape of every income tax computation</h3>
+          <p class="gd-p">Every income tax question follows the same skeleton. You gather up income by type, deduct any allowable reliefs, take off the personal allowance, and then tax what remains in strict layers: non-savings income first, then savings income, then dividends. The layering is not cosmetic. Each type of income has its own rates and its own allowances, and because income stacks in a fixed order, a pound of dividend income can be pushed into a higher band by salary sitting underneath it. Most of the marks in a computation question come from respecting this order.</p>
+          <p class="gd-p">Non-savings income means earnings, pensions, trading profits and rental income. Savings income is mainly interest, and also includes chargeable gains on life assurance bonds. Dividends sit on top. Bond gains behave as the top slice for the relief calculation you will meet in section 10.</p>
+
+          <h3 class="gd-sub">The personal allowance and its trap</h3>
+          <p class="gd-p">The personal allowance is £12,570, frozen at that level for some years yet, and this freeze quietly drags more people into tax each year as wages rise. Once your adjusted net income passes £100,000 the allowance is withdrawn at £1 for every £2 of excess, so it has vanished entirely by £125,140. Inside that window each extra £100 of income costs £40 of tax plus £20 from the lost allowance, an effective rate of 60%. Pension contributions and gift aid donations reduce adjusted net income, which is why they are the standard advice for anyone in this band.</p>
+          <p class="gd-p">The marriage allowance lets a spouse or civil partner who cannot use all of their personal allowance transfer £1,260 of it to their partner, worth up to £252 as a tax reduction. It is only available where neither party pays tax above the basic rate. Do not confuse it with the married couple's allowance, which exists only for couples where at least one partner was born before 6 April 1935.</p>
+
+          <h3 class="gd-sub">Rates and bands</h3>
+          <table class="gd-table">
+            <thead><tr><th>Taxable income (2026/27)</th><th>Band</th><th>Non-savings &amp; savings</th><th>Dividends</th></tr></thead>
+            <tbody>
+              <tr><td>£0 – £37,700</td><td>Basic rate</td><td>20%</td><td>10.75%</td></tr>
+              <tr><td>£37,701 – £125,140</td><td>Higher rate</td><td>40%</td><td>35.75%</td></tr>
+              <tr><td>Over £125,140</td><td>Additional rate</td><td>45%</td><td>39.35%</td></tr>
+            </tbody>
+          </table>
+          <div class="gd-note"><span class="gd-note-tag">Exam trap</span>The dividend rates rose by two percentage points from April 2026, so 2026/27 dividends are taxed at 10.75%, 35.75% and 39.35%. Savings and property income rates are due to rise by two points from April 2027, but for 2026/27 they remain at 20%, 40% and 45%. An exam question set in 2026/27 uses the old savings rates and the new dividend rates.</div>
+          <p class="gd-p">Both gift aid donations and personal pension contributions are paid net of 20% basic rate relief, and higher and additional rate relief is given by extending the basic rate (and higher rate) band by the gross amount. A £8,000 net pension contribution becomes £10,000 gross and pushes the £37,700 threshold up to £47,700, so £10,000 more income is taxed at basic instead of higher rates.</p>
+
+          <h3 class="gd-sub">Savings income: two allowances that are not really allowances</h3>
+          <p class="gd-p">Two 0% bands apply to interest. The starting rate for savings taxes the first £5,000 of savings income at 0%, but only to the extent that taxable non-savings income has not already filled that £5,000. Anyone with a salary above £17,570 loses it entirely, which is why it matters mainly for pensioners and part-time earners living off interest. On top of that, the personal savings allowance gives basic rate taxpayers £1,000 of interest at 0% and higher rate taxpayers £500; additional rate taxpayers get nothing. Both are technically nil-rate bands rather than deductions: the income still counts as taxable income, still fills the bands, and can still push other income upwards.</p>
+          <p class="gd-p">Dividends work the same way. The dividend allowance taxes the first £500 of dividends at 0% for everyone, whatever their marginal rate, but that £500 still occupies band space.</p>
+
+          <div class="gd-example">
+            <div class="gd-example-head">Worked example — why the 0% bands still use up band space</div>
+            <p class="gd-p">Priya has a salary of £48,000 and receives £600 of dividends in 2026/27.</p>
+            <div class="gd-calc">
+              <div class="gd-calc-title">Non-savings income</div>
+              <div class="gd-calc-line"><span>Salary less personal allowance: £48,000 − £12,570</span><span>£35,430</span></div>
+              <div class="gd-calc-line"><span>All within the basic rate band, at 20%</span><span>£7,086.00</span></div>
+              <div class="gd-calc-title">Dividends (stacked on top)</div>
+              <div class="gd-calc-line"><span>First £500 — dividend allowance at 0% (fills £35,430–£35,930)</span><span>£0.00</span></div>
+              <div class="gd-calc-line"><span>Remaining £100 at 10.75% (still within the basic band)</span><span>£10.75</span></div>
+              <div class="gd-calc-line gd-calc-total"><span>Total liability</span><span>£7,096.75</span></div>
+            </div>
+            <p class="gd-p">If Priya's salary had been £50,000, the £500 allowance would have straddled the £37,700 threshold and the final £100 of dividends would have fallen into the higher band at 35.75%. The allowance taxed the dividends at 0% but did nothing to stop them climbing the bands.</p>
+          </div>
+
+          <h3 class="gd-sub">Other pieces the exam likes</h3>
+          <p class="gd-p">The high income child benefit charge claws back child benefit where the higher earner in a household has adjusted net income over £60,000, at 1% of the benefit for every £200 of excess, so the benefit has gone entirely by £80,000. The charge falls on the higher earner regardless of who receives the benefit. Separately, everyone has a £1,000 trading allowance and a £1,000 property allowance: gross income below those figures is simply not taxed and need not be reported, and above them you can choose to deduct the allowance instead of actual expenses.</p>
+          <p class="gd-p">Employment benefits in kind are taxed on their cash equivalent, with company cars valued as a CO2-based percentage of list price. Employees are taxed on the arising basis through PAYE, and the season-ticket loans threshold, trivial benefits and similar details are worth a skim of your card deck rather than deep study here.</p>
+          <div class="gd-key"><span class="gd-key-tag">Key point</span>When a computation goes wrong, it is nearly always an ordering error. Write the layers out every time: non-savings, then savings, then dividends, with bond gains as the top slice. Check which 0% bands apply, remember they consume band space, and only then apply rates.</div>
+        </section>
+
+        <section class="gd-section" id="gs-2">
+          <h2 class="gd-title"><span class="gd-num">2</span>National Insurance Contributions</h2>
+
+          <h3 class="gd-sub">The four classes</h3>
+          <p class="gd-p">National Insurance looks intimidating because of its class structure, but the logic is simple: employees and employers pay Class 1 on earnings, the self-employed pay Class 4 on profits, and Classes 2 and 3 exist only as voluntary top-ups for people protecting their State Pension record. NICs are charged on earnings, not on investment income, which is one reason a pound of salary and a pound of interest are treated so differently by the tax system as a whole.</p>
+          <table class="gd-table">
+            <thead><tr><th>Class</th><th>Who pays</th><th>Basis (2026/27)</th></tr></thead>
+            <tbody>
+              <tr><td>Class 1 (primary)</td><td>Employees</td><td>8% on earnings £242–£967 a week; 2% above £967</td></tr>
+              <tr><td>Class 1 (secondary)</td><td>Employers</td><td>15% on all earnings above £96 a week — no upper limit</td></tr>
+              <tr><td>Class 1A</td><td>Employers</td><td>15% on taxable benefits in kind (cars, medical cover etc.)</td></tr>
+              <tr><td>Class 2</td><td>Self-employed (voluntary)</td><td>Flat £3.65 a week, paid voluntarily to protect benefit entitlement</td></tr>
+              <tr><td>Class 3</td><td>Anyone (voluntary)</td><td>Flat £18.40 a week, to fill gaps in a contribution record</td></tr>
+              <tr><td>Class 4</td><td>Self-employed</td><td>6% on profits £12,570–£50,270; 2% above</td></tr>
+            </tbody>
+          </table>
+          <p class="gd-p">The weekly employee thresholds annualise to the same figures you know from income tax: the £242 primary threshold is £12,570 a year and the £967 upper earnings limit is £50,270. The employer's secondary threshold is far lower, £96 a week (about £5,000 a year), and unlike the employee there is no upper limit: the employer keeps paying 15% all the way up. Most employers can offset an employment allowance of £10,500 a year against their secondary Class 1 bill, though a company whose only employee is its sole director cannot claim it.</p>
+
+          <div class="gd-example">
+            <div class="gd-example-head">Worked example — the same £60,000, employed vs self-employed</div>
+            <div class="gd-calc">
+              <div class="gd-calc-title">Employee on a £60,000 salary</div>
+              <div class="gd-calc-line"><span>£12,570 at 0%</span><span>£0.00</span></div>
+              <div class="gd-calc-line"><span>£37,700 (to £50,270) at 8%</span><span>£3,016.00</span></div>
+              <div class="gd-calc-line"><span>£9,730 (above £50,270) at 2%</span><span>£194.60</span></div>
+              <div class="gd-calc-line gd-calc-total"><span>Employee Class 1</span><span>£3,210.60</span></div>
+              <div class="gd-calc-line"><span>Employer: (£60,000 − £5,000) × 15%</span><span>£8,250.00</span></div>
+              <div class="gd-calc-title">Self-employed with £60,000 profits</div>
+              <div class="gd-calc-line"><span>£37,700 at 6%</span><span>£2,262.00</span></div>
+              <div class="gd-calc-line"><span>£9,730 at 2%</span><span>£194.60</span></div>
+              <div class="gd-calc-line gd-calc-total"><span>Class 4</span><span>£2,456.60</span></div>
+            </div>
+            <p class="gd-p">The self-employed person pays less personally, and there is no employer contribution at all. That £8,250 gap is the reason employment status disputes and the IR35 rules exist, and the exam expects you to recognise the comparison.</p>
+          </div>
+
+          <h3 class="gd-sub">Edges and wrinkles</h3>
+          <p class="gd-p">Employees stop paying NICs at State Pension age, though their employer carries on paying secondary contributions. For the self-employed, Class 4 stops from the start of the tax year in which SPA is reached if it was reached before the year began. Special upper secondary thresholds mean employers pay nothing for employees under 21, apprentices under 25 and armed forces veterans in their first civilian year, on earnings up to £967 a week. Company directors have an annual earnings period, so a director cannot avoid NICs by taking salary as a single lump: the annual thresholds of £12,570 and £50,270 apply to the year's earnings as a whole.</p>
+          <p class="gd-p">Class 4 contributions buy no benefits whatsoever, which is why paying them unnecessarily should be avoided. Class 2, now purely voluntary at £3.65 a week, is the cheap route by which a low-profit self-employed person protects their State Pension entitlement; Class 3 at £18.40 a week does the same job for anyone else and can be paid up to six years after the year in question.</p>
+          <div class="gd-note"><span class="gd-note-tag">Exam trap</span>NICs are charged per employment. Someone with two part-time jobs, each below £242 a week, pays nothing even if the combined earnings would attract contributions in a single job. Investment income never attracts NICs at any level.</div>
+        </section>
+
+        <section class="gd-section" id="gs-3">
+          <h2 class="gd-title"><span class="gd-num">3</span>Capital Gains Tax</h2>
+
+          <h3 class="gd-sub">What is and is not caught</h3>
+          <p class="gd-p">CGT taxes the profit on disposing of an asset: a sale, but equally a gift, since giving something away is a disposal at market value. Death is not a disposal. Assets pass to the estate at their date-of-death value with the gain wiped out, the so-called uplift on death, and this single fact drives a great deal of later-life planning: an elderly investor holding a large gain may be better advised to keep the asset until death than to sell or gift it and crystallise CGT.</p>
+          <p class="gd-p">A surprising amount is exempt. Your main residence, cars, gilts, qualifying corporate bonds, ISA holdings, EIS and SEIS shares held for three years, VCT shares, betting winnings, and chattels sold for £6,000 or less all escape entirely. Wasting chattels (tangible movable property with a life of 50 years or less) are exempt whatever their value. For chattels sold above £6,000 there is a marginal rule: the gain cannot exceed 5/3 of the excess of proceeds over £6,000. Transfers between spouses and civil partners are made on a no gain, no loss basis, meaning the recipient inherits the original base cost — not an exemption so much as a deferral, and the standard first move in couples' planning.</p>
+
+          <h3 class="gd-sub">The computation</h3>
+          <p class="gd-p">The mechanics are short: proceeds (or market value for gifts), less acquisition cost, less incidental costs of purchase and sale and any enhancement expenditure. Current-year losses must be set against current-year gains in full, even if that wastes the annual exempt amount. Brought-forward losses are kinder: you use only enough of them to bring net gains down to the annual exempt amount, and carry the rest onward.</p>
+          <table class="gd-table">
+            <thead><tr><th>CGT figure (2026/27)</th><th>Amount</th></tr></thead>
+            <tbody>
+              <tr><td>Annual exempt amount</td><td>£3,000 — no carry forward if unused (trustees: £1,500)</td></tr>
+              <tr><td>Rate within unused basic rate band</td><td>18%</td></tr>
+              <tr><td>Rate above the basic rate band</td><td>24%</td></tr>
+              <tr><td>Business asset disposal relief rate</td><td>18% flat, on a £1m lifetime limit of qualifying gains</td></tr>
+              <tr><td>UK residential property reporting</td><td>Return and payment on account within 60 days of completion</td></tr>
+            </tbody>
+          </table>
+          <p class="gd-p">Gains stack on top of taxable income to determine the rate. You may set the annual exempt amount and losses against gains in whatever order saves most tax; with both 18% and 24% gains in a year, set them against the 24% gains first. The basic rate band can be extended by gross pension contributions and gift aid, which lowers the CGT rate on gains that would otherwise fall above £37,700, a point examiners enjoy.</p>
+
+          <div class="gd-example">
+            <div class="gd-example-head">Worked example — losses, the exempt amount and the rate bands</div>
+            <p class="gd-p">Tom has taxable income (after his personal allowance) of £30,000 in 2026/27. He sells shares realising a gain of £20,000 and separately crystallises a loss of £5,000 on another holding.</p>
+            <div class="gd-calc">
+              <div class="gd-calc-line"><span>Gain</span><span>£20,000</span></div>
+              <div class="gd-calc-line"><span>Less current-year loss</span><span>(£5,000)</span></div>
+              <div class="gd-calc-line"><span>Less annual exempt amount</span><span>(£3,000)</span></div>
+              <div class="gd-calc-line gd-calc-total"><span>Taxable gains</span><span>£12,000</span></div>
+              <div class="gd-calc-line"><span>Unused basic rate band: £37,700 − £30,000 = £7,700 at 18%</span><span>£1,386.00</span></div>
+              <div class="gd-calc-line"><span>Remaining £4,300 at 24%</span><span>£1,032.00</span></div>
+              <div class="gd-calc-line gd-calc-total"><span>CGT payable (31 January 2028)</span><span>£2,418.00</span></div>
+            </div>
+            <p class="gd-p">Had Tom made a £4,300 gross pension contribution, his basic rate band would have stretched to cover the whole gain at 18%, saving £258 of CGT on top of the income tax relief.</p>
+          </div>
+
+          <h3 class="gd-sub">Matching rules for shares</h3>
+          <p class="gd-p">Shares of the same class in the same company are pooled at average cost, but two anti-avoidance rules take priority. A disposal is matched first with any shares bought the same day, then with shares bought in the following 30 days, and only then with the section 104 pool. The 30-day rule exists to kill "bed and breakfasting": selling shares purely to crystallise a gain or loss and buying them back the next morning. Selling and repurchasing inside an ISA, or having your spouse buy the equivalent holding, still achieves the same effect legitimately.</p>
+          <div class="gd-timeline">
+            <div class="gd-timeline-track">
+              <div class="gd-tl-seg gd-tl-0"><span class="gd-tl-pct">1st</span><span class="gd-tl-yrs">Same-day purchases</span></div>
+              <div class="gd-tl-seg gd-tl-2"><span class="gd-tl-pct">2nd</span><span class="gd-tl-yrs">Next 30 days</span></div>
+              <div class="gd-tl-seg gd-tl-5"><span class="gd-tl-pct">3rd</span><span class="gd-tl-yrs">Section 104 pool (average cost)</span></div>
+            </div>
+            <div class="gd-timeline-caption">Order in which a share disposal is matched against acquisitions</div>
+          </div>
+
+          <h3 class="gd-sub">Reliefs</h3>
+          <p class="gd-p">Private residence relief exempts the gain on your only or main home for the periods you lived in it, plus the final nine months of ownership regardless. Certain absences count as deemed occupation if the property was your main residence before and after. A couple can only have one main residence between them, and where you own two homes you can elect which qualifies within two years of the combination changing.</p>
+          <p class="gd-p">Business asset disposal relief taxes the first £1m of lifetime qualifying gains at a flat 18%: broadly disposals of all or part of a trading business owned for two years, or shares in your personal trading company (5% voting and economic interest, and you are an officer or employee). Investors' relief extends similar treatment to long-term external investors with a separate £1m limit. Holdover relief lets a gift of business assets, or any gift that is immediately chargeable to IHT such as a transfer into a discretionary trust, be made without CGT: the donee takes over the donor's base cost and the gain waits. EIS investment lets you defer any gain by reinvesting it; SEIS reinvestment exempts half of the reinvested gain outright.</p>
+          <div class="gd-note"><span class="gd-note-tag">Exam trap</span>Sales of UK residential property need a return and a payment on account of the CGT within 60 days of completion — not the following 31 January. And remember the annual exempt amount is lost if unused; it never carries forward, which is the argument for realising gains up to £3,000 every year.</div>
+        </section>
+
+        <section class="gd-section" id="gs-4">
+          <h2 class="gd-title"><span class="gd-num">4</span>Inheritance Tax</h2>
+
+          <h3 class="gd-sub">How IHT thinks about a gift</h3>
+          <p class="gd-p">Inheritance tax is not really a tax on inheriting. It is a tax on <em>transfers of value</em>: any occasion on which your estate becomes worth less because you have given something away. Death is simply treated as one final transfer of everything you own. This framing matters because the tax measures the <strong>loss to your estate</strong>, not the value of what the recipient gains. If you own a pair of antique vases worth £50,000 together but only £15,000 each on their own, giving one away costs your estate £35,000, and that is the figure IHT works with, even though the recipient only received something worth £15,000.</p>
+          <p class="gd-p">There are only three rates to remember: 0% within the nil rate band, 20% on chargeable lifetime transfers, and 40% on death. The 20% lifetime rate is deliberately half the death rate. Almost everything else in this section is about working out which rate applies, and to how much.</p>
+
+          <h3 class="gd-sub">The nil rate bands</h3>
+          <p class="gd-p">Everyone has a nil rate band (NRB) of £325,000, frozen at that level until 5 April 2031. Transfers within it are taxed at 0%, but they still use it up, and that is the mechanism behind most IHT calculations: gifts made in the seven years before a transfer stack up ("cumulate") and eat into the band available for whatever comes next.</p>
+          <table class="gd-table">
+            <thead><tr><th>Band / rate (2026/27)</th><th>Amount</th></tr></thead>
+            <tbody>
+              <tr><td>Nil rate band (NRB)</td><td>£325,000 — frozen to 5 April 2031</td></tr>
+              <tr><td>Residence nil rate band (RNRB)</td><td>£175,000 — frozen to 5 April 2031</td></tr>
+              <tr><td>Death rate</td><td>40% (36% where ≥10% of the net estate goes to charity)</td></tr>
+              <tr><td>Lifetime rate (CLTs)</td><td>20% (25% of the net gift if the donor pays the tax)</td></tr>
+              <tr><td>RNRB taper threshold</td><td>£2m — RNRB reduced £1 for every £2 over</td></tr>
+            </tbody>
+          </table>
+          <p class="gd-p">When the first of a married couple (or civil partners) dies, any proportion of the NRB they did not use transfers to the survivor. It is the unused <em>percentage</em> that carries over, applied to the band in force at the second death, and the uplift is capped at 100%. A widow whose husband used none of his band therefore has £650,000 of nil rate band available on her own death.</p>
+          <p class="gd-p">The residence nil rate band is an extra £175,000 that applies only where a home the deceased lived in passes on death to direct descendants: children (including step, adopted and foster children), grandchildren, and their spouses or civil partners. It too is transferable between spouses, even if the first death was before the RNRB existed in April 2017, and even if the first estate had no home in it. Two features catch people out. First, it tapers away for estates over £2m: you lose £1 of RNRB for every £2 of net estate above the threshold, so an estate of £2.1m has its RNRB cut to £125,000 and by £2.35m a single person's RNRB has gone entirely. Second, the RNRB never applies to lifetime gifts that become chargeable on death; it shelters the death estate only.</p>
+          <div class="gd-note"><span class="gd-note-tag">Exam trap</span>The £2m RNRB taper is measured against the estate <em>before</em> reliefs and exemptions are deducted. An estate can be far below £2m after business relief and still lose its RNRB. And a buy-to-let the deceased never lived in can never qualify, however clearly it passes to the children.</div>
+
+          <h3 class="gd-sub">Exemptions</h3>
+          <p class="gd-p">Transfers between spouses and civil partners are completely exempt, in life and on death, which is why IHT planning for couples is really about the second death. (Where the recipient spouse is not a long-term UK resident for IHT purposes, the exemption is capped at an amount equal to the NRB.) Gifts to UK charities and qualifying political parties are also wholly exempt. The remaining exemptions apply to lifetime gifts only, and they are worth memorising as a set:</p>
+          <table class="gd-table">
+            <thead><tr><th>Lifetime exemption</th><th>Amount / condition</th></tr></thead>
+            <tbody>
+              <tr><td>Annual exemption</td><td>£3,000 per tax year; one year's unused balance can be carried forward, and the current year's is used first</td></tr>
+              <tr><td>Small gifts</td><td>£250 per recipient per tax year — cannot be combined with any other exemption for the same recipient</td></tr>
+              <tr><td>Wedding gifts</td><td>£5,000 from a parent; £2,500 from a grandparent (or from one party to the other); £1,000 from anyone else</td></tr>
+              <tr><td>Normal expenditure out of income</td><td>Unlimited, if part of a regular pattern, made from income, and leaving the donor's usual standard of living intact</td></tr>
+            </tbody>
+          </table>
+          <p class="gd-p">Normal expenditure out of income is the most powerful of these and the least understood. There is no monetary ceiling. What HMRC looks for is a settled pattern (regular premiums on a policy in trust are the classic case), funding from income rather than capital, and no drop in the donor's own standard of living. The amounts do not have to be identical each year.</p>
+          <div class="gd-note"><span class="gd-note-tag">Exam trap</span>The £250 small gifts exemption is all or nothing. A gift of £3,250 to one person cannot be split into £3,000 annual exemption plus £250 small gift; once a gift to that person exceeds £250, the small gifts exemption is lost for them entirely.</div>
+
+          <h3 class="gd-sub">PETs and CLTs</h3>
+          <p class="gd-p">Any lifetime gift that is not exempt falls into one of two categories, and classifying it correctly is the first step in every lifetime-transfer question. A <strong>potentially exempt transfer (PET)</strong> is a gift to another individual, to a bare trust, or to a disabled trust. Nothing is payable when you make it; if you survive seven years it becomes fully exempt, and if you die within seven years it becomes chargeable retrospectively. A <strong>chargeable lifetime transfer (CLT)</strong> is essentially any gift into a trust other than those two kinds, most commonly a discretionary trust. A CLT is taxed immediately at 20% on whatever exceeds your available nil rate band, with more tax potentially due if you die within seven years.</p>
+
+          <div class="gd-flow">
+            <div class="gd-flow-caption">Is this lifetime gift a PET or a CLT?</div>
+            <div class="gd-flow-q">Is the gift covered by an exemption<br>(spouse, charity, annual, small gifts, wedding, normal expenditure)?</div>
+            <div class="gd-flow-branches">
+              <div class="gd-branch">
+                <div class="gd-branch-label gd-yes">Yes</div>
+                <div class="gd-flow-a gd-flow-exempt">Exempt — no IHT, ever</div>
+              </div>
+              <div class="gd-branch">
+                <div class="gd-branch-label gd-no">No</div>
+                <div class="gd-flow-q gd-flow-q2">Is it a gift to an individual,<br>a bare trust, or a disabled trust?</div>
+                <div class="gd-flow-branches">
+                  <div class="gd-branch">
+                    <div class="gd-branch-label gd-yes">Yes</div>
+                    <div class="gd-flow-a gd-flow-pet"><strong>PET</strong> — no tax now; exempt if you survive 7 years</div>
+                  </div>
+                  <div class="gd-branch">
+                    <div class="gd-branch-label gd-no">No</div>
+                    <div class="gd-flow-a gd-flow-clt"><strong>CLT</strong> — 20% now on the excess over the NRB; recalculated at death rates if you die within 7 years</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <p class="gd-p">One refinement on the CLT charge: the 20% rate assumes the trustees pay the tax. If you pay it yourself, your estate has lost both the gift and the tax, so the gift is "grossed up" and the effective rate becomes 25% of the net amount given.</p>
+
+          <h3 class="gd-sub">Death within seven years: taper relief</h3>
+          <p class="gd-p">When you die within seven years of a PET or CLT, the transfer is taxed (or re-taxed) at death rates, using the nil rate band and rates in force <em>at death</em>, but the value of the gift and your seven-year cumulation <em>as they stood at the date of the gift</em>. If you survived at least three years, taper relief then reduces the tax bill. Read the timeline as the percentage of the full 40% charge that remains payable:</p>
+
+          <div class="gd-timeline">
+            <div class="gd-timeline-track">
+              <div class="gd-tl-seg gd-tl-0"><span class="gd-tl-pct">100%</span><span class="gd-tl-yrs">0–3 yrs</span></div>
+              <div class="gd-tl-seg gd-tl-1"><span class="gd-tl-pct">80%</span><span class="gd-tl-yrs">3–4</span></div>
+              <div class="gd-tl-seg gd-tl-2"><span class="gd-tl-pct">60%</span><span class="gd-tl-yrs">4–5</span></div>
+              <div class="gd-tl-seg gd-tl-3"><span class="gd-tl-pct">40%</span><span class="gd-tl-yrs">5–6</span></div>
+              <div class="gd-tl-seg gd-tl-4"><span class="gd-tl-pct">20%</span><span class="gd-tl-yrs">6–7</span></div>
+              <div class="gd-tl-seg gd-tl-5"><span class="gd-tl-pct">0%</span><span class="gd-tl-yrs">7+</span></div>
+            </div>
+            <div class="gd-timeline-caption">Proportion of the full death-rate tax still payable, by years survived after the gift</div>
+          </div>
+
+          <p class="gd-p">Three points about taper relief repay careful attention. It reduces the <em>tax</em>, never the value of the transfer, so a tapered gift still occupies the nil rate band in full when you calculate tax on later transfers and on the estate. It is worthless where the gift sits within the nil rate band, because there is no tax to taper; the gift's only effect is to soak up nil rate band that the estate would otherwise have used. And for a CLT on which 20% was already paid in lifetime, the lifetime tax is credited against the death charge; in years six and seven the tapered charge (8% effective) is below the 20% already paid, so no more is due, but nothing is refunded either.</p>
+
+          <div class="gd-example">
+            <div class="gd-example-head">Worked example — cumulation, taper relief and the death estate</div>
+            <p class="gd-p">Margaret made two lifetime gifts, after all exemptions: a CLT of £150,000 into a discretionary trust in May 2019, and a PET of £200,000 to her daughter in June 2022. She dies in January 2027 leaving an estate of £600,000, including her home worth £250,000, all to her children. Assume no transferable bands from a spouse.</p>
+            <div class="gd-calc">
+              <div class="gd-calc-title">Step 1 — the CLT (May 2019)</div>
+              <div class="gd-calc-line"><span>Within the NRB when made, so no lifetime tax</span><span>£0</span></div>
+              <div class="gd-calc-line"><span>Made more than 7 years before death (May 2019 → Jan 2027)</span><span>no death charge</span></div>
+              <div class="gd-calc-note">But it was made within 7 years <em>before the PET</em>, so it still sits in the PET's cumulation.</div>
+              <div class="gd-calc-title">Step 2 — the PET becomes chargeable (June 2022)</div>
+              <div class="gd-calc-line"><span>Cumulation at date of gift (the 2019 CLT)</span><span>£150,000</span></div>
+              <div class="gd-calc-line"><span>NRB at death £325,000 − £150,000 = available</span><span>£175,000</span></div>
+              <div class="gd-calc-line"><span>Taxable: £200,000 − £175,000</span><span>£25,000</span></div>
+              <div class="gd-calc-line"><span>Tax at 40%</span><span>£10,000</span></div>
+              <div class="gd-calc-line"><span>Taper relief — survived 4–5 years, 40% reduction</span><span>(£4,000)</span></div>
+              <div class="gd-calc-line gd-calc-total"><span>Payable by the daughter</span><span>£6,000</span></div>
+              <div class="gd-calc-title">Step 3 — the death estate (January 2027)</div>
+              <div class="gd-calc-line"><span>Cumulation in the 7 years before death: the PET only (CLT has dropped out)</span><span>£200,000</span></div>
+              <div class="gd-calc-line"><span>NRB remaining: £325,000 − £200,000</span><span>£125,000</span></div>
+              <div class="gd-calc-line"><span>RNRB (home to direct descendants, estate under £2m)</span><span>£175,000</span></div>
+              <div class="gd-calc-line"><span>Taxable: £600,000 − £125,000 − £175,000</span><span>£300,000</span></div>
+              <div class="gd-calc-line gd-calc-total"><span>IHT on the estate at 40%</span><span>£120,000</span></div>
+            </div>
+            <p class="gd-p">Notice the double role of the seven-year clock. The CLT escaped a death charge because Margaret survived it by more than seven years, yet it still pushed £25,000 of the PET into charge, because cumulation for the PET looks back seven years <em>from the gift</em>, not from death. The full £200,000 PET then occupied the estate's nil rate band despite the taper relief.</p>
+          </div>
+
+          <h3 class="gd-sub">Gifts with reservation</h3>
+          <p class="gd-p">You cannot give something away and keep enjoying it. If you gift your house to your children but carry on living in it rent-free, the gift is a <strong>gift with reservation of benefit</strong>: for IHT the house stays in your estate at its value on your death, however long ago you gave it away. The reservation can end, and the seven-year clock then starts from that point; equally a gift can be clean at the outset and become reserved later, for instance if you stop paying a full market rent. Paying a genuine market rent, or giving away an undivided share while sharing the running costs of a home you occupy together, keeps the gift clean. The rules bite only for IHT; the gift remains perfectly valid as a matter of property law. Where the reservation rules do not catch an arrangement, the standalone <em>pre-owned assets tax</em> (an income tax charge on the benefit retained) may apply instead.</p>
+
+          <div class="gd-flow">
+            <div class="gd-flow-caption">Does the gift with reservation rule apply?</div>
+            <div class="gd-flow-q">After the gift, does the donor continue to use<br>or benefit from the asset?</div>
+            <div class="gd-flow-branches">
+              <div class="gd-branch">
+                <div class="gd-branch-label gd-no">No</div>
+                <div class="gd-flow-a gd-flow-pet">Normal PET/CLT — 7-year clock runs from the gift</div>
+              </div>
+              <div class="gd-branch">
+                <div class="gd-branch-label gd-yes">Yes</div>
+                <div class="gd-flow-q gd-flow-q2">Does the donor pay full market rent,<br>or is the gift spouse/charity exempt?</div>
+                <div class="gd-flow-branches">
+                  <div class="gd-branch">
+                    <div class="gd-branch-label gd-yes">Yes</div>
+                    <div class="gd-flow-a gd-flow-pet">No reservation — treated as an outright gift</div>
+                  </div>
+                  <div class="gd-branch">
+                    <div class="gd-branch-label gd-no">No</div>
+                    <div class="gd-flow-a gd-flow-clt"><strong>GWR</strong> — asset stays in the death estate at date-of-death value</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <h3 class="gd-sub">Business relief, agricultural relief and quick succession relief</h3>
+          <p class="gd-p">Business relief exists so that a family business does not have to be broken up to pay the tax bill on it. Relief at 100% covers an unincorporated business or a share in one, and unquoted shareholdings of any size, including AIM shares until 5 April 2026. Relief at 50% covers controlling holdings in fully listed companies, land or plant used by your company or partnership, and, from 6 April 2026, AIM shares. The asset must generally have been owned for two years, and businesses that mainly deal in investments, land or shares do not qualify at all. From 6 April 2026 a significant new limit applies: 100% relief is capped by a <strong>£1m allowance</strong> per person (shared across business and agricultural property); qualifying value above the allowance gets 50% relief instead. Agricultural relief works on similar lines for farmland and farm buildings, on the agricultural value only.</p>
+          <p class="gd-p">Quick succession relief deals with the unfairness of the same wealth being taxed twice in short order. If you die within five years of inheriting property that bore IHT, the tax on your own estate is reduced by a sliding percentage of the tax attributable to the earlier transfer:</p>
+          <table class="gd-table">
+            <thead><tr><th>Gap between the two charges</th><th>QSR percentage</th></tr></thead>
+            <tbody>
+              <tr><td>Up to 1 year</td><td>100%</td></tr>
+              <tr><td>1–2 years</td><td>80%</td></tr>
+              <tr><td>2–3 years</td><td>60%</td></tr>
+              <tr><td>3–4 years</td><td>40%</td></tr>
+              <tr><td>4–5 years</td><td>20%</td></tr>
+            </tbody>
+          </table>
+
+          <h3 class="gd-sub">The death estate, the charity rate, and paying the tax</h3>
+          <p class="gd-p">The estate on death is everything owned at market value, less debts and reasonable funeral expenses. A share of a home held as joint tenants passes automatically to the co-owner but the deceased's share still counts in the estate. Where at least 10% of the "baseline" net estate (broadly, the estate after liabilities, reliefs, exemptions and the ordinary NRB, but before the RNRB and before the charitable legacy itself) is left to charity, the whole taxable estate is charged at 36% instead of 40%.</p>
+          <p class="gd-p">Tax on the estate is due six months after the end of the month of death, and the personal representatives pay it; interest runs after that. Tax on a lifetime CLT is due six months after the end of the month of transfer, except that transfers made between 6 April and 30 September fall due on the following 30 April. Extra tax arising because the donor died within seven years of a gift is payable by the <em>donee</em>. Tax on land, controlling shareholdings and business property can be paid in ten equal annual instalments, though the option lapses if the asset is sold.</p>
+          <div class="gd-key"><span class="gd-key-tag">Key point</span>In the exam, always fix the order of a death computation: classify each lifetime gift, deduct exemptions, tax gifts oldest first using each gift's own seven-year look-back for cumulation, apply taper to any <em>tax</em> due, then tax the estate using whatever NRB the last seven years of gifts have left behind, plus RNRB if a home passes to direct descendants.</div>
+        </section>
+
+        <section class="gd-section" id="gs-5">
+          <h2 class="gd-title"><span class="gd-num">5</span>Residence &amp; Domicile</h2>
+
+          <h3 class="gd-sub">Why residence matters</h3>
+          <p class="gd-p">UK residents are taxed on their worldwide income and gains as they arise. Non-residents are broadly taxed only on UK-source income, and generally escape CGT altogether except on UK land and property. Residence is decided year by year under the statutory residence test (SRT), which works through three stages in a fixed order. If any stage produces an answer, you stop.</p>
+
+          <div class="gd-flow">
+            <div class="gd-flow-caption">The statutory residence test — three stages, applied in order</div>
+            <div class="gd-flow-q">Stage 1 — automatic overseas tests: fewer than 16 days in the UK (or fewer than 46 if not resident in any of the last 3 years), or full-time work abroad with fewer than 91 UK days and fewer than 31 UK workdays?</div>
+            <div class="gd-flow-branches">
+              <div class="gd-branch">
+                <div class="gd-branch-label gd-yes">Yes</div>
+                <div class="gd-flow-a gd-flow-pet">Automatically <strong>non-resident</strong></div>
+              </div>
+              <div class="gd-branch">
+                <div class="gd-branch-label gd-no">No</div>
+                <div class="gd-flow-q gd-flow-q2">Stage 2 — automatic UK tests: 183+ days in the UK, only home in the UK, or full-time work in the UK?</div>
+                <div class="gd-flow-branches">
+                  <div class="gd-branch">
+                    <div class="gd-branch-label gd-yes">Yes</div>
+                    <div class="gd-flow-a gd-flow-clt">Automatically <strong>resident</strong></div>
+                  </div>
+                  <div class="gd-branch">
+                    <div class="gd-branch-label gd-no">No</div>
+                    <div class="gd-flow-a">Stage 3 — <strong>sufficient ties test</strong>: compare days in the UK with the number of UK ties</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <p class="gd-p">The ties are family (spouse, partner or minor children resident here), accommodation available to you, substantive work in the UK, more than 90 days spent here in either of the two previous tax years, and, for leavers only, spending more days in the UK than in any other single country. The more days you spend here, the fewer ties you can afford. Arrivers (not resident in any of the previous three years) ignore the country tie; leavers count all five, which makes it deliberately harder to shed residence than to acquire it. Days are counted by presence at midnight, with a deeming rule to stop day-trip manipulation.</p>
+          <p class="gd-p">A tax year is normally all-or-nothing, but split year treatment can divide the year into a resident part and a non-resident part when you arrive or leave partway through in defined circumstances, such as starting full-time work abroad. And someone who leaves for a short spell cannot simply realise gains abroad: if you return within five years, gains realised while away are taxed in the year of return under the temporary non-residence rules.</p>
+
+          <h3 class="gd-sub">The FIG regime: what replaced domicile</h3>
+          <p class="gd-p">Domicile no longer drives UK tax. Since April 2025 the old remittance basis has been replaced by the four-year foreign income and gains (FIG) regime. A qualifying new resident, someone arriving after at least ten consecutive tax years of non-residence, can claim for any or all of their first four years of residence to have their foreign income and gains completely exempt, even if the money is brought to the UK. The price of a claim is real: for that year they lose their personal allowance and CGT annual exempt amount. UK income and gains are taxed normally regardless. Eligible employees can also claim overseas workday relief on the same four-year footing.</p>
+          <div class="gd-note"><span class="gd-note-tag">Exam trap</span>The FIG clock runs on tax years of residence, not on claims. Someone who claims in years one and three but not two still has only four years in total from arrival, and years they skip are not added on at the end.</div>
+
+          <h3 class="gd-sub">IHT: long-term residence</h3>
+          <p class="gd-p">IHT has also switched from domicile to a residence test. You are a <strong>long-term UK resident</strong>, and therefore within IHT on your worldwide assets, once you have been UK resident for at least 10 of the previous 20 tax years. Anyone else is within IHT only on UK-situs assets. Shedding the status takes time on the way out too: a leaver remains long-term resident for a tail of between three and ten years depending on how long they were resident. The spouse exemption is unlimited between two long-term residents, but capped at the level of the nil rate band where the recipient spouse is not one, though the recipient can elect to be treated as long-term resident to unlock the full exemption.</p>
+          <div class="gd-key"><span class="gd-key-tag">Key point</span>Keep the two residence tests apart in your mind. The SRT decides each single year for income tax and CGT. Long-term residence is a rolling 10-out-of-20-year count that decides worldwide IHT exposure. A person can easily be non-resident under the SRT this year yet still be a long-term resident for IHT.</div>
+        </section>
+
+        <section class="gd-section" id="gs-6">
+          <h2 class="gd-title"><span class="gd-num">6</span>Self Assessment &amp; Anti-Avoidance</h2>
+
+          <h3 class="gd-sub">The self assessment cycle</h3>
+          <p class="gd-p">Self assessment shifts the burden of getting tax right onto the taxpayer. For any tax year, a paper return is due by 31 October following the year end and an online return by the following 31 January. File on paper by 31 October and HMRC will calculate the tax for you; underpayments of up to £3,000 can be collected through a later PAYE code if the return is in by 30 December online.</p>
+          <p class="gd-p">Income tax and Class 4 NICs are normally paid in three instalments. Two payments on account, each half of the previous year's liability, fall due on 31 January in the tax year and the following 31 July, with a balancing payment (or repayment) the next 31 January, which is also when any CGT is due. Nobody makes payments on account if last year's bill (net of tax deducted at source) was under £1,000, or if more than 80% of their tax was collected at source. You can claim to reduce payments on account if you expect a lower liability, but reduce them too far and interest, and possibly a penalty, follows.</p>
+          <table class="gd-table">
+            <thead><tr><th>Date (for 2026/27)</th><th>What happens</th></tr></thead>
+            <tbody>
+              <tr><td>31 January 2027</td><td>First payment on account for 2026/27 (with the 2025/26 balancing payment)</td></tr>
+              <tr><td>31 July 2027</td><td>Second payment on account for 2026/27</td></tr>
+              <tr><td>31 October 2027</td><td>Paper return deadline for 2026/27</td></tr>
+              <tr><td>31 January 2028</td><td>Online return deadline; balancing payment and CGT for 2026/27</td></tr>
+            </tbody>
+          </table>
+
+          <h3 class="gd-sub">Penalties and interest</h3>
+          <p class="gd-p">Late filing costs £100 automatically, even if no tax is due. Once a return is three months late, daily £10 penalties run for up to 90 days; at six months, and again at twelve, a further penalty of the higher of £300 and 5% of the tax due is added, so a year's delay costs at least £1,600 before any tax-geared penalties. Late payment is punished separately: a 5% surcharge on tax still unpaid 30 days after the due date, repeated at six and twelve months, with interest running throughout on top. Errors in returns attract penalties scaled to behaviour, from nothing for a careful mistake disclosed promptly up to 100% of the tax for deliberate and concealed understatement, and HMRC's window to raise a discovery assessment stretches from four years for innocent error through six for carelessness to twenty for deliberate conduct.</p>
+          <div class="gd-note"><span class="gd-note-tag">Exam trap</span>Payments on account never include CGT. However large a gain, the CGT is due in one amount on 31 January after the tax year (subject to the 60-day payment on account for UK residential property), and it does not feed into the following year's payments on account either.</div>
+
+          <h3 class="gd-sub">Avoidance, evasion and the rules between</h3>
+          <p class="gd-p">Evasion is illegal concealment: not declaring income, falsifying figures. Avoidance uses legal means to reduce tax, but Parliament has built machinery to catch the aggressive end of it. The DOTAS regime forces promoters to disclose notifiable avoidance schemes to HMRC early, and users must quote the scheme reference number on their returns. Accelerated payment notices can require disputed tax to be paid up front while a scheme is litigated. Above all this sits the general anti-abuse rule (GAAR), which lets HMRC counteract tax advantages from arrangements that are "abusive", meaning they cannot reasonably be regarded as a reasonable course of action in relation to the legislation (the "double reasonableness" test). It applies to income tax, CGT, IHT, corporation tax, NICs and SDLT, but not VAT, and carries a 60% penalty of the counteracted advantage.</p>
+          <div class="gd-key"><span class="gd-key-tag">Key point</span>Using ISAs, pensions and the annual exemptions is neither avoidance nor evasion; it is using the system as intended. The exam wants you to place any scenario on the spectrum: legitimate planning, disclosable avoidance, abusive arrangement caught by the GAAR, or criminal evasion.</div>
+        </section>
+
+        <section class="gd-section" id="gs-7">
+          <h2 class="gd-title"><span class="gd-num">7</span>Stamp Duties</h2>
+
+          <h3 class="gd-sub">SDLT on land in England and Northern Ireland</h3>
+          <p class="gd-p">Stamp duty land tax is paid by the purchaser of land and buildings, calculated in slices like income tax rather than at a single rate on the whole price. Scotland and Wales run their own equivalents (land and buildings transaction tax, and land transaction tax), which the exam expects you to know exist rather than to compute.</p>
+          <table class="gd-table">
+            <thead><tr><th>Residential price slice</th><th>Rate</th><th>Non-residential slice</th><th>Rate</th></tr></thead>
+            <tbody>
+              <tr><td>Up to £125,000</td><td>0%</td><td>Up to £150,000</td><td>0%</td></tr>
+              <tr><td>£125,001 – £250,000</td><td>2%</td><td>£150,001 – £250,000</td><td>2%</td></tr>
+              <tr><td>£250,001 – £925,000</td><td>5%</td><td>Above £250,000</td><td>5%</td></tr>
+              <tr><td>£925,001 – £1.5m</td><td>10%</td><td></td><td></td></tr>
+              <tr><td>Above £1.5m</td><td>12%</td><td></td><td></td></tr>
+            </tbody>
+          </table>
+          <div class="gd-example">
+            <div class="gd-example-head">Worked example — a £400,000 house (only property, not a first-time buyer)</div>
+            <div class="gd-calc">
+              <div class="gd-calc-line"><span>First £125,000 at 0%</span><span>£0</span></div>
+              <div class="gd-calc-line"><span>£125,001 – £250,000 at 2%</span><span>£2,500</span></div>
+              <div class="gd-calc-line"><span>£250,001 – £400,000 at 5%</span><span>£7,500</span></div>
+              <div class="gd-calc-line gd-calc-total"><span>SDLT</span><span>£10,000</span></div>
+            </div>
+            <p class="gd-p">If this were a second home or buy-to-let, an extra 5% would apply to every slice, adding £20,000. If the buyer were non-UK resident, a further 2% surcharge would stack on top of everything else.</p>
+          </div>
+          <p class="gd-p">First-time buyers pay nothing on homes costing up to £300,000, and 5% only on the excess for homes up to £500,000. Above £500,000 the relief vanishes entirely and normal rates apply to the full price, a genuine cliff edge. Every joint purchaser must qualify: if one of a couple has ever owned property anywhere in the world, the relief is lost. Remember also that where a purchaser takes over a mortgage as part of a gift, the assumed debt is chargeable consideration and can trigger SDLT even though no price was paid.</p>
+
+          <h3 class="gd-sub">Taxes on share purchases</h3>
+          <p class="gd-p">Buying shares electronically through CREST attracts stamp duty reserve tax at 0.5% of the consideration, rounded to the nearest penny and collected automatically. Paper stock transfer forms attract stamp duty at 0.5% rounded up to the nearest £5, with no charge where the consideration is £1,000 or less. Both fall on the purchaser. Gilts, most corporate bonds, new issues, AIM shares and units in collective investment schemes are outside the charge, and gifts with no consideration attract nothing.</p>
+          <div class="gd-note"><span class="gd-note-tag">Exam trap</span>The 0.5% is charged on the price paid, not the market value, and it is the buyer who pays; there is no stamp duty on the seller's side. ETFs and AIM shares are the classic "no stamp duty" answers in comparison questions.</div>
+        </section>
+
+        <section class="gd-section" id="gs-8">
+          <h2 class="gd-title"><span class="gd-num">8</span>VAT &amp; Corporation Tax</h2>
+
+          <h3 class="gd-sub">VAT essentials</h3>
+          <p class="gd-p">VAT is a tax on consumer spending collected in stages by businesses. A registered trader charges output tax on sales, reclaims input tax on purchases, and pays HMRC the difference, so the burden lands on the final consumer. Registration is compulsory once taxable supplies in the previous twelve months exceed £90,000, or as soon as you expect to exceed £90,000 in the next 30 days alone; deregistration is possible below £88,000. Voluntary registration below the threshold can make sense for a business selling to VAT-registered customers, because it unlocks input tax recovery at no real cost to those customers.</p>
+          <p class="gd-p">The distinction the exam tests hardest is zero-rated versus exempt. Both mean no VAT on the sale, but a zero-rated trader (food, books, children's clothing, new homes) is fully within the system and reclaims all input tax, while an exempt trader (finance, insurance, education, health) cannot register in respect of those supplies and the input VAT sticks as a cost. Most financial advice and intermediation is exempt, which is why VAT recovery is a live issue for advisory firms. The standard rate is 20%, with 5% on domestic fuel and a few other reduced-rate items.</p>
+          <table class="gd-table">
+            <thead><tr><th>VAT category</th><th>VAT on sales</th><th>Input tax recovery</th></tr></thead>
+            <tbody>
+              <tr><td>Standard-rated (20%) / reduced (5%)</td><td>Charged</td><td>Recoverable</td></tr>
+              <tr><td>Zero-rated (0%)</td><td>Charged at 0%</td><td>Recoverable in full</td></tr>
+              <tr><td>Exempt</td><td>None</td><td>Not recoverable</td></tr>
+              <tr><td>Outside the scope (wages, dividends)</td><td>None</td><td>n/a</td></tr>
+            </tbody>
+          </table>
+
+          <h3 class="gd-sub">Corporation tax</h3>
+          <p class="gd-p">Companies pay corporation tax on their profits, meaning trading income, investment income and chargeable gains together. The main rate is 25%, but a small profits rate of 19% applies where profits do not exceed £50,000, with marginal relief between £50,000 and £250,000. The effect of the relief is that profits in the marginal zone bear 19% on the first £50,000 and 26.5% on the slice between £50,000 and £250,000, so the marginal pound in that zone is taxed more heavily than in either band around it. These limits are divided among associated companies. Dividends a company receives from other companies are generally exempt, and dividends it pays are not deductible: they come out of taxed profits.</p>
+          <div class="gd-example">
+            <div class="gd-example-head">Worked example — profits of £120,000</div>
+            <div class="gd-calc">
+              <div class="gd-calc-line"><span>First £50,000 at 19%</span><span>£9,500</span></div>
+              <div class="gd-calc-line"><span>Next £70,000 at 26.5%</span><span>£18,550</span></div>
+              <div class="gd-calc-line gd-calc-total"><span>Corporation tax</span><span>£28,050 (23.4% average)</span></div>
+            </div>
+          </div>
+          <p class="gd-p">Most companies pay their tax nine months and one day after the end of the accounting period, with large companies paying by quarterly instalments. Companies get no annual exempt amount on gains, but unlike individuals they receive indexation allowance frozen up to December 2017 on older assets. For the adviser, corporation tax matters mainly because it shapes the internal tax drag on funds: life company policyholder funds bear corporation tax at broadly 20% on income and gains, which is the root of the onshore bond's "tax paid" treatment you will meet in section 10.</p>
+          <div class="gd-note"><span class="gd-note-tag">Exam trap</span>Zero-rated and exempt are not synonyms. If a question asks which trader can reclaim input VAT despite charging no VAT, the answer is the zero-rated one, never the exempt one.</div>
+        </section>
+
+        <section class="gd-section" id="gs-9">
+          <h2 class="gd-title"><span class="gd-num">9</span>Direct Investments</h2>
+
+          <h3 class="gd-sub">Cash and interest-bearing assets</h3>
+          <p class="gd-p">Bank and building society interest is paid gross and taxed as savings income, sheltered first by the starting rate for savings and the personal savings allowance from section 1. NS&amp;I products split into the taxable (income bonds, guaranteed bonds) and the wholly tax-free (premium bond prizes, fixed-interest and index-linked savings certificates), and the tax-free ones are worth proportionately more to a higher rate taxpayer, a comparison the exam runs regularly.</p>
+          <p class="gd-p">Gilts have a distinctive split personality. The interest is taxable as savings income, paid gross by default, but any capital gain is completely exempt from CGT, and losses are correspondingly not allowable. Corporate bonds that meet the conditions to be qualifying corporate bonds enjoy the same CGT exemption. This makes low-coupon gilts standing below par attractive to higher rate taxpayers, who convert taxable interest into exempt capital growth. The accrued income scheme stops the obvious abuse of selling a bond just before the coupon date to dress interest up as capital: on a sale, the accrued interest is taxed as income of the seller, though only where nominal holdings exceed £5,000.</p>
+
+          <h3 class="gd-sub">Equities</h3>
+          <p class="gd-p">Dividends are taxed as the top layer of income apart from bond gains, at 10.75%, 35.75% or 39.35% after the £500 dividend allowance. Disposals are within CGT with the share matching rules from section 3. Stamp duty or SDRT at 0.5% applies on purchase. There is nothing exotic here; equities are the baseline against which the wrappers in section 10 are compared.</p>
+
+          <h3 class="gd-sub">Buy-to-let property</h3>
+          <p class="gd-p">Rental profits are non-savings income, normally computed on the cash basis, with deductions for the running costs of the letting: agents' fees, repairs (but not improvements), insurance and so on. The rule that catches candidates is mortgage interest. Interest on a loan to buy a residential let is not deductible from rents at all; instead you get a basic rate tax reducer of 20% of the interest. A higher rate taxpayer with substantial interest costs can therefore show a taxable profit far larger than their cash profit, and the reducer cannot create a refund. Two small shelters exist: the £1,000 property allowance for micro landlords, and rent-a-room relief exempting up to £7,500 of gross receipts from letting a furnished room in your own home (halved where two people share the income). On sale, gains are within CGT with the 60-day reporting deadline, and no business asset disposal relief, because ordinary letting is an investment, not a trade.</p>
+          <div class="gd-note"><span class="gd-note-tag">Exam trap</span>The 20% mortgage interest reducer applies to residential lets only; interest on commercial property loans remains fully deductible. And repairs restore, improvements enhance: redecorating is deductible against rent, an extension is capital and only helps in the CGT computation on sale.</div>
+
+          <table class="gd-table">
+            <thead><tr><th>Direct investment</th><th>Income treatment</th><th>Capital treatment</th></tr></thead>
+            <tbody>
+              <tr><td>Cash deposits</td><td>Savings income (PSA applies)</td><td>No gain possible</td></tr>
+              <tr><td>Gilts</td><td>Interest taxable, paid gross</td><td>Exempt from CGT</td></tr>
+              <tr><td>Qualifying corporate bonds</td><td>Interest taxable</td><td>Exempt from CGT</td></tr>
+              <tr><td>Equities</td><td>Dividend rates after £500 allowance</td><td>CGT at 18% / 24%</td></tr>
+              <tr><td>Buy-to-let</td><td>Non-savings income; 20% interest reducer</td><td>CGT at 18% / 24%, 60-day reporting</td></tr>
+              <tr><td>NS&amp;I certificates, premium bonds</td><td>Tax free</td><td>Tax free</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="gd-section" id="gs-10">
+          <h2 class="gd-title"><span class="gd-num">10</span>Indirect Investments</h2>
+
+          <h3 class="gd-sub">ISAs</h3>
+          <p class="gd-p">The ISA is the simplest wrapper: no tax on income or gains inside, nothing to report, no tax on withdrawal. The overall subscription limit is £20,000 a year across the adult ISAs, with a Junior ISA limit of £9,000 and a Lifetime ISA limit of £4,000 (which counts within the £20,000). The Lifetime ISA, open to those aged 18 to 39, adds a 25% government bonus but charges a 25% penalty on withdrawals that are not for a first home costing up to £450,000 or for age 60 onwards, and that penalty claws back slightly more than the bonus. Losses inside an ISA are never allowable, ISAs cannot be held jointly, and on death the funds keep their tax-free status while the estate is administered; a surviving spouse also receives an additional permitted subscription equal to the deceased's ISA value, on top of their own allowance. From April 2027 the cash ISA limit falls to £12,000 for savers under 65, with the overall £20,000 unchanged.</p>
+
+          <h3 class="gd-sub">Collectives and REITs</h3>
+          <p class="gd-p">Unit trusts and OEICs are taxed transparently at the investor level: equity funds pay dividend distributions taxed at dividend rates, funds more than 60% in interest-bearing assets pay interest distributions taxed as savings income, and reinvested (accumulation) income is still taxable even though nothing is received. The fund itself pays no tax on gains it makes internally, and the investor faces CGT only on disposing of their own units. Investment trusts behave like ordinary shares. Real estate investment trusts are tax-transparent for their property business: the property income distribution (PID) is paid net of 20% and taxed on you as property income, not as a dividend, while ordinary dividends from the residual business are taxed normally; gains on the shares are within CGT as usual.</p>
+
+          <h3 class="gd-sub">Life assurance bonds and the 5% rule</h3>
+          <p class="gd-p">A single-premium investment bond is a non-qualifying life policy. Nothing you receive from it is ever within CGT; instead, chargeable event gains are taxed as savings income when a chargeable event happens: death, maturity, full surrender, assignment for money, or a part surrender beyond the allowance. The 5% rule is what makes bonds a planning tool: each policy year you can withdraw up to 5% of the original premium with no immediate tax at all, unused amounts carrying forward, until 100% of the premium has been returned. The 5% withdrawals are tax-deferred, not tax-free; they are added back when the bond finally ends.</p>
+          <p class="gd-p">Onshore and offshore versions differ in one fundamental respect. An onshore fund has already suffered life company tax of broadly 20%, so the investor receives a 20% credit: basic rate taxpayers owe nothing more, and higher and additional rate payers top up to 40% or 45%. An offshore fund rolls up gross, so the whole gain is taxable at up to 45% with no credit, and the price of gross roll-up is a bigger bill at the end.</p>
+          <table class="gd-table">
+            <thead><tr><th></th><th>Onshore bond</th><th>Offshore bond</th></tr></thead>
+            <tbody>
+              <tr><td>Fund taxation</td><td>~20% on income and gains inside the fund</td><td>Gross roll-up, virtually none</td></tr>
+              <tr><td>20% basic rate credit</td><td>Yes — basic rate taxpayers pay no more</td><td>No — gain taxed from the ground up</td></tr>
+              <tr><td>Rates on gain</td><td>Extra 20% / 25% for higher / additional rate</td><td>20% / 40% / 45% in full</td></tr>
+              <tr><td>Starting rate &amp; PSA</td><td colspan="2">Both available — gains are savings income</td></tr>
+              <tr><td>Top-slicing relief</td><td colspan="2">Available on the same five-step basis</td></tr>
+            </tbody>
+          </table>
+
+          <h3 class="gd-sub">Top-slicing relief</h3>
+          <p class="gd-p">A bond gain built up over many years lands in a single tax year and can push a basic rate taxpayer deep into higher rates. Top-slicing relief limits the damage by asking what tax you would have paid had the gain arrived evenly. The method is five fixed steps: work out the tax on the full gain in the year; deduct the 20% treated as paid to find the liability; divide the gain by N, the number of complete policy years (or years since the last chargeable event), to get the annual equivalent; tax that slice, deduct 20% of it, and multiply back up by N to get the relieved liability; the relief is the difference between the two liabilities.</p>
+
+          <div class="gd-example">
+            <div class="gd-example-head">Worked example — top-slicing on an onshore bond</div>
+            <p class="gd-p">Dev invested £50,000 in an onshore bond and fully surrenders it after six complete policy years for £74,000, a gain of £24,000. His other income in 2026/27 is £48,570, all non-savings, so his taxable income before the gain is £36,000 and he has £1,700 of basic rate band left. As a higher rate taxpayer his personal savings allowance is £500.</p>
+            <div class="gd-calc">
+              <div class="gd-calc-title">Steps 1–2 — tax on the whole gain</div>
+              <div class="gd-calc-line"><span>£500 within the personal savings allowance at 0%</span><span>£0</span></div>
+              <div class="gd-calc-line"><span>£1,200 within the remaining basic band at 20%</span><span>£240</span></div>
+              <div class="gd-calc-line"><span>£22,300 at 40%</span><span>£8,920</span></div>
+              <div class="gd-calc-line"><span>Tax on gain</span><span>£9,160</span></div>
+              <div class="gd-calc-line"><span>Less basic rate credit: £24,000 × 20%</span><span>(£4,800)</span></div>
+              <div class="gd-calc-line gd-calc-total"><span>Liability on the gain</span><span>£4,360</span></div>
+              <div class="gd-calc-title">Steps 3–4 — the annual equivalent</div>
+              <div class="gd-calc-line"><span>Slice: £24,000 ÷ 6</span><span>£4,000</span></div>
+              <div class="gd-calc-line"><span>Tax on slice: £500 at 0% + £1,200 at 20% + £2,300 at 40%</span><span>£1,160</span></div>
+              <div class="gd-calc-line"><span>Less 20% of slice</span><span>(£800)</span></div>
+              <div class="gd-calc-line"><span>Relieved liability: £360 × 6</span><span>£2,160</span></div>
+              <div class="gd-calc-title">Step 5 — the relief</div>
+              <div class="gd-calc-line"><span>Top-slicing relief: £4,360 − £2,160</span><span>£2,200</span></div>
+              <div class="gd-calc-line gd-calc-total"><span>Tax actually payable on the bond gain</span><span>£2,160</span></div>
+            </div>
+            <p class="gd-p">Had the bond been offshore, the steps would be identical but with no £4,800 credit to deduct, so Dev would pay £4,800 more. Note that the full gain, not the slice, counts when testing whether income exceeds £100,000 for personal allowance tapering, except within the top-slicing calculation itself.</p>
+          </div>
+
+          <h3 class="gd-sub">Venture capital schemes</h3>
+          <table class="gd-table">
+            <thead><tr><th></th><th>EIS</th><th>SEIS</th><th>VCT</th></tr></thead>
+            <tbody>
+              <tr><td>Income tax relief</td><td>30%</td><td>50%</td><td>30%</td></tr>
+              <tr><td>Annual investment limit</td><td>£1m (£2m if excess in knowledge-intensive companies)</td><td>£200,000</td><td>£200,000</td></tr>
+              <tr><td>Minimum holding period</td><td>3 years</td><td>3 years</td><td>5 years</td></tr>
+              <tr><td>Carry back to prior year</td><td>Yes</td><td>Yes</td><td>No</td></tr>
+              <tr><td>CGT on disposal</td><td>Exempt after 3 years</td><td>Exempt after 3 years</td><td>Exempt always</td></tr>
+              <tr><td>Other CGT feature</td><td>Unlimited deferral of other gains reinvested</td><td>50% of a reinvested gain exempted outright</td><td>None</td></tr>
+              <tr><td>Dividends</td><td>Taxable</td><td>Taxable</td><td>Tax free</td></tr>
+              <tr><td>Loss relief against income</td><td>Yes</td><td>Yes</td><td>No</td></tr>
+              <tr><td>IHT business relief</td><td>Usually after 2 years</td><td>Usually after 2 years</td><td>No</td></tr>
+            </tbody>
+          </table>
+          <p class="gd-p">The income tax relief in each case is a tax reducer capped at your actual liability, and it is clawed back if you sell within the holding period. These are high-risk, illiquid investments in small companies; the tax reliefs exist precisely because of that risk, and suitability comes before tax in any advice question.</p>
+
+          <h3 class="gd-sub">Pensions</h3>
+          <p class="gd-p">Pensions remain the most heavily incentivised wrapper: contributions attract relief at your marginal rate, the fund grows almost tax free, and a quarter can be drawn tax free at retirement. Tax-relievable personal contributions are limited to the higher of £3,600 and 100% of relevant UK earnings; on top sits the annual allowance of £60,000 covering employer and employee contributions together, with unused allowance from the three previous years available under carry forward. High earners see the allowance tapered by £1 for every £2 of adjusted income over £260,000, down to a floor of £10,000 by £360,000. Flexibly accessing a money purchase pot triggers the money purchase annual allowance of £10,000 and kills carry forward for money purchase savings. Exceed whichever allowance applies and an annual allowance charge at your marginal rate claws the relief back.</p>
+          <p class="gd-p">The tax-free lump sum is normally 25% of the fund, capped by the lump sum allowance of £268,275. Income drawn beyond it, whether by annuity, drawdown or the taxable 75% of an UFPLS payment, is non-savings income through PAYE. Death benefits are currently outside the estate for IHT, but from 6 April 2027 unused pension funds will be brought within it, a change that reverses the recent practice of preserving pensions and spending other assets first.</p>
+          <div class="gd-note"><span class="gd-note-tag">Exam trap</span>Personal contributions are limited by earnings, and dividends, rent and interest are not earnings. A company director paid mainly in dividends may have a large income yet almost no scope for tax-relieved personal contributions; an employer contribution sidesteps the earnings test entirely, limited only by the annual allowance.</div>
+        </section>
+
+        <section class="gd-section" id="gs-11">
+          <h2 class="gd-title"><span class="gd-num">11</span>Trust Taxation</h2>
+
+          <h3 class="gd-sub">Three trusts, three tax personalities</h3>
+          <p class="gd-p">For tax purposes almost every trust you meet in R03 is one of three kinds. A <strong>bare (absolute) trust</strong> is barely a trust at all: the trustees are nominees, the named beneficiary is absolutely entitled, and all income and gains are simply taxed on the beneficiary with their own allowances. An <strong>interest in possession (IIP) trust</strong> gives a life tenant the right to income as it arises, with the capital preserved for others. A <strong>discretionary trust</strong> gives the trustees genuine choice over who benefits and when, and the tax system charges hardest for that flexibility.</p>
+
+          <h3 class="gd-sub">Income tax</h3>
+          <table class="gd-table">
+            <thead><tr><th>Trust type</th><th>Savings / other income</th><th>Dividends</th><th>Who is taxed</th></tr></thead>
+            <tbody>
+              <tr><td>Bare</td><td>Beneficiary's own rates</td><td>Beneficiary's own rates</td><td>Beneficiary, with full allowances</td></tr>
+              <tr><td>Interest in possession</td><td>20%</td><td>10.75%</td><td>Trustees at basic rates; life tenant adjusts via R185 credit</td></tr>
+              <tr><td>Discretionary</td><td>45%</td><td>39.35%</td><td>Trustees; distributions carry a 45% credit</td></tr>
+            </tbody>
+          </table>
+          <p class="gd-p">Trustees never get a personal allowance, personal savings allowance or dividend allowance. Since April 2024 a trust whose income is £500 or less for the year simply pays nothing, replacing the old standard rate band. In an IIP trust the trustees' basic rate tax is effectively paid on the life tenant's behalf: a non-taxpaying beneficiary reclaims it, a higher rate beneficiary tops it up, and mandating income directly to the beneficiary avoids the trustee charge altogether. In a discretionary trust every income distribution reaches the beneficiary with a 45% credit regardless of the underlying income type, so a basic rate beneficiary can reclaim a substantial refund; the price is that the trustees must have actually paid enough 45% tax into their "tax pool" to cover the credits, and dividend income taxed at 39.35% leaves a shortfall the trustees must fund.</p>
+          <div class="gd-note"><span class="gd-note-tag">Exam trap</span>The parental settlement rule: where a parent settles funds on their own minor unmarried child, and the income exceeds £100 a year per parent per child, all of it is taxed as the parent's. This applies to bare trusts and outright gifts alike, and it is why grandparents are the tax-efficient settlors for grandchildren's savings.</div>
+
+          <h3 class="gd-sub">Capital gains tax</h3>
+          <p class="gd-p">Trustees pay CGT at 24% with an annual exempt amount of £1,500, half the individual figure, shared between trusts created by the same settlor (subject to a minimum). A transfer into a relevant property trust is a disposal by the settlor at market value, but because it is immediately chargeable to IHT, holdover relief is available whatever the asset, so the gain can travel into the trust with the trustees taking the settlor's base cost. The same relief works on the way out when assets are appointed to beneficiaries. Bare trusts have no trustee CGT at all: gains are the beneficiary's, with the beneficiary's own £3,000 exemption.</p>
+
+          <h3 class="gd-sub">Inheritance tax: the relevant property regime</h3>
+          <p class="gd-p">Section 4 established that a gift into a bare trust is a PET while gifts into IIP and discretionary trusts are CLTs. Once inside a relevant property trust, the fund faces its own IHT cycle: a <strong>periodic charge</strong> on each ten-year anniversary of up to 6% of the value above the available nil rate band, and an <strong>exit charge</strong>, a time-apportioned fraction of the periodic rate, when capital leaves between anniversaries. The trust's nil rate band is reduced by the settlor's chargeable transfers in the seven years before creation, so a settlor who had already used their band leaves the trust exposed from the start. Keeping the trust fund at or below the nil rate band at each ten-year point is the standard way to run these charges at nil, and even where that fails, a maximum of 6% a decade is often a price worth paying for control. The fund sits in no one's estate, which is the point.</p>
+          <div class="gd-key"><span class="gd-key-tag">Key point</span>Pre-2006 interest in possession trusts, trusts created on death for a surviving spouse, and certain trusts for bereaved minors and disabled people sit outside the relevant property regime, with the trust assets treated as part of the relevant beneficiary's estate instead. For anything created in lifetime today, assume PET treatment for bare and disabled trusts and the relevant property regime for everything else.</div>
+        </section>
+
+        <section class="gd-section" id="gs-12">
+          <h2 class="gd-title"><span class="gd-num">12</span>Tax Planning &amp; Computations</h2>
+
+          <h3 class="gd-sub">The full computation, all four income types</h3>
+          <p class="gd-p">Everything in this guide converges on one skill: stacking income correctly and applying the right rate to each layer. Here is a complete computation with all four types in play.</p>
+
+          <div class="gd-example">
+            <div class="gd-example-head">Worked example — non-savings, savings, dividends and a bond gain</div>
+            <p class="gd-p">In 2026/27 Amy has a salary of £30,000, bank interest of £3,000, dividends of £4,500 and a chargeable gain of £8,000 on the full surrender of an onshore bond.</p>
+            <div class="gd-calc">
+              <div class="gd-calc-title">Layer 1 — non-savings income</div>
+              <div class="gd-calc-line"><span>Salary £30,000 less personal allowance £12,570</span><span>£17,430</span></div>
+              <div class="gd-calc-line"><span>Taxed at 20%</span><span>£3,486</span></div>
+              <div class="gd-calc-title">Layer 2 — savings income (interest)</div>
+              <div class="gd-calc-line"><span>Starting rate: taxable non-savings income exceeds £5,000, so none</span><span>—</span></div>
+              <div class="gd-calc-line"><span>£1,000 personal savings allowance at 0%</span><span>£0</span></div>
+              <div class="gd-calc-line"><span>£2,000 at 20%</span><span>£400</span></div>
+              <div class="gd-calc-title">Layer 3 — dividends</div>
+              <div class="gd-calc-line"><span>£500 dividend allowance at 0%</span><span>£0</span></div>
+              <div class="gd-calc-line"><span>£4,000 at 10.75%</span><span>£430</span></div>
+              <div class="gd-calc-title">Layer 4 — the bond gain (top slice, savings income)</div>
+              <div class="gd-calc-line"><span>£8,000 at 20% (total taxable income £32,930 stays within £37,700)</span><span>£1,600</span></div>
+              <div class="gd-calc-line"><span>Less basic rate credit on the onshore gain</span><span>(£1,600)</span></div>
+              <div class="gd-calc-line gd-calc-total"><span>Total payable: £3,486 + £400 + £430</span><span>£4,316</span></div>
+            </div>
+            <p class="gd-p">Amy stays a basic rate taxpayer throughout, so the onshore bond credit extinguishes the tax on the gain and no top-slicing arithmetic is needed. Check the total taxable income first in any question: if the gain kept her below £37,700, the bond adds nothing to the bill, and spotting that early saves several minutes.</p>
+          </div>
+
+          <h3 class="gd-sub">Planning with income tax</h3>
+          <p class="gd-p">Most personal tax planning is the unglamorous business of wasting nothing. Between spouses and civil partners, assets can move freely with no CGT or IHT cost, so income-producing investments belong with the lower-taxed partner, and each of the couple should be using their own personal allowance, savings allowance, dividend allowance, ISA subscription and CGT exemption before either doubles up. Pension contributions and gift aid extend the basic rate band, restore a tapered personal allowance, and can defuse the high income child benefit charge, giving effective relief far above the headline rates in the £60,000–£80,000 and £100,000–£125,140 corridors.</p>
+          <p class="gd-p">Timing matters this year more than most. Dividend rates rose by two percentage points in April 2026, and savings and property income rates follow in April 2027, so accelerating interest and rental income into 2026/27, for instance by choosing a maturity date or invoicing pattern deliberately, locks in the lower rates. Deferring income into a year when you expect to be in a lower band remains the mirror-image technique.</p>
+
+          <h3 class="gd-sub">Planning with CGT and IHT</h3>
+          <p class="gd-p">For CGT, use the £3,000 exemption every year or lose it, realise offsetting losses in the same tax year with care, spread large disposals across two tax years, and remember the interspousal transfer before a sale so both exemptions and both basic rate bands are in play. Deferring a disposal until death remains the bluntest but most effective relief of all, because of the CGT uplift. For IHT, the ordering is: spend and enjoy first, then give early and survive seven years, using the annual and normal-expenditure exemptions that cost nothing, and consider nil-rate-band discretionary trusts topped up at seven-year intervals for control. Keep an eye on the RNRB taper for estates near £2m, where a lifetime gift that brings the estate below the threshold can save 40% and recover tapered RNRB at the same time.</p>
+
+          <h3 class="gd-sub">Choosing the wrapper</h3>
+          <table class="gd-table">
+            <thead><tr><th>Wrapper</th><th>Best suited to</th><th>Watch for</th></tr></thead>
+            <tbody>
+              <tr><td>Pension</td><td>Almost everyone with earnings — marginal-rate relief in, 25% tax free out</td><td>Access from 55 (57 from 2028); IHT treatment worsens from April 2027</td></tr>
+              <tr><td>ISA</td><td>First £20,000 of annual savings; higher rate taxpayers with dividends or interest</td><td>No relief on the way in; allowance lost if unused</td></tr>
+              <tr><td>Onshore bond</td><td>Basic rate taxpayers likely to stay basic rate; trustees; 5% income seekers</td><td>Fund tax is not reclaimable by non-taxpayers</td></tr>
+              <tr><td>Offshore bond</td><td>Those expecting to be non-resident or basic rate at encashment; gross roll-up</td><td>Whole gain taxable with no credit</td></tr>
+              <tr><td>Collectives unwrapped</td><td>Using dividend allowance and CGT exemption each year</td><td>Ongoing reporting; accumulation income still taxable</td></tr>
+              <tr><td>EIS / SEIS / VCT</td><td>High earners with tax to relieve who accept genuine risk</td><td>Suitability first; reliefs clawed back on early exit</td></tr>
+            </tbody>
+          </table>
+          <div class="gd-key"><span class="gd-key-tag">Key point</span>In any planning question, the CII wants the boring answer done properly: allowances used, both spouses engaged, pensions and ISAs before exotica, and tax never allowed to override suitability. A recommendation that saves tax but mismatches the client's risk profile or liquidity needs is a wrong answer, however clever the arithmetic.</div>
+        </section>
+
+      </div>
+    </div>
+
+    <!-- ─── SETTINGS VIEW ─── -->
+    <div id="view-settings" class="view">
+      <div class="view-header">
+        <h1 class="view-title">Settings</h1>
+        <p class="view-subtitle">Manage your data and preferences</p>
+      </div>
+      <div class="settings-grid">
+        <div class="panel">
+          <h2 class="panel-title">Account &amp; Sync</h2>
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-name" id="settingsAccountName">Not signed in</div>
+              <div class="setting-desc" id="settingsAccountDesc">Sign in to sync progress across all your devices</div>
+            </div>
+            <button class="btn btn-secondary" id="settingsAuthBtn">Sign In</button>
+          </div>
+          <div class="sync-info-row" id="syncInfoRow">
+            <span class="sync-dot" id="syncDot"></span>
+            <span id="syncInfoText">Not connected to cloud</span>
+          </div>
+        </div>
+        <div class="panel">
+          <h2 class="panel-title">Data Management</h2>
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-name">Export Progress</div>
+              <div class="setting-desc">Download your study progress as JSON</div>
+            </div>
+            <button class="btn btn-secondary" id="exportBtn">Export</button>
+          </div>
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-name">Import Progress</div>
+              <div class="setting-desc">Restore progress from a JSON file</div>
+            </div>
+            <label class="btn btn-secondary" for="importFile">Import
+              <input type="file" id="importFile" accept=".json" class="hidden" />
+            </label>
+          </div>
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-name">Reset All Progress</div>
+              <div class="setting-desc">Clear all study data and start fresh</div>
+            </div>
+            <button class="btn btn-danger" id="resetAllBtn">Reset All</button>
+          </div>
+        </div>
+        <div class="panel">
+          <h2 class="panel-title">Reset by Deck</h2>
+          <p class="panel-desc">Reset progress for a specific deck only.</p>
+          <div class="deck-reset-list" id="deckResetList"></div>
+        </div>
+        <div class="panel">
+          <h2 class="panel-title">Keyboard Shortcuts</h2>
+          <div class="shortcuts-list">
+            <div class="shortcut"><kbd>Space</kbd><span>Reveal answer</span></div>
+            <div class="shortcut"><kbd>K</kbd><span>Mark as Know</span></div>
+            <div class="shortcut"><kbd>D</kbd><span>Mark as Don't Know</span></div>
+            <div class="shortcut"><kbd>U</kbd><span>Undo last decision</span></div>
+            <div class="shortcut"><kbd>B</kbd><span>Bookmark card</span></div>
+            <div class="shortcut"><kbd>N</kbd><span>Next card</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Confirm modal -->
+  <div class="modal-backdrop hidden" id="modalBackdrop">
+    <div class="modal" role="dialog" aria-modal="true">
+      <h3 class="modal-title" id="modalTitle">Are you sure?</h3>
+      <p class="modal-body" id="modalBody"></p>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="modalCancel">Cancel</button>
+        <button class="btn btn-danger" id="modalConfirm">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
