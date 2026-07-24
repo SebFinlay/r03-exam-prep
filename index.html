@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="CII R03 Personal Taxation — Exam Preparation Platform" />
+  <title>R03 Exam Prep</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+</head>
+<body class="light">
+
+  <!-- ═══ AUTH GATE ═══ -->
+  <div class="auth-gate" id="authGate">
+    <div class="auth-card">
+      <div class="auth-brand">
+        <div class="brand-icon brand-icon-lg">R03</div>
+        <h1 class="auth-title">R03 Exam Prep</h1>
+        <p class="auth-subtitle">Personal Taxation — Sign in to sync your progress across all your devices</p>
+      </div>
+
+      <button class="btn-google-signin" id="btnGoogleSignIn">
+        <svg viewBox="0 0 48 48" width="20" height="20">
+          <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12s5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/>
+          <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/>
+          <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/>
+          <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/>
+        </svg>
+        Continue with Google
+      </button>
+
+      <div class="auth-divider"><span>or</span></div>
+
+      <button class="btn btn-secondary auth-offline-btn" id="btnContinueOffline">
+        Continue without an account
+      </button>
+      <p class="auth-offline-note">Your progress will only be saved on this device.</p>
+
+      <div class="auth-status hidden" id="authStatus"></div>
+    </div>
+  </div>
+
+  <!-- ═══ SIDEBAR ═══ -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">R03</div>
+      <div class="brand-text">
+        <span class="brand-title">Exam Prep</span>
+        <span class="brand-sub">Personal Taxation</span>
+      </div>
+    </div>
+
+    <!-- Account panel -->
+    <div class="account-panel" id="accountPanel">
+      <div class="account-avatar" id="accountAvatar">?</div>
+      <div class="account-info">
+        <div class="account-email" id="accountEmail">Not signed in</div>
+        <div class="account-sync-status" id="accountSyncStatus">Local only</div>
+      </div>
+      <button class="account-action-btn" id="accountActionBtn" title="Sign in">
+        <svg viewBox="0 0 24 24"><path d="M11 7L9.6 8.4l2.6 2.6H2v2h10.2l-2.6 2.6L11 17l5-5-5-5zm9 12h-8v2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-8v2h8v14z"/></svg>
+      </button>
+    </div>
+
+    <div class="sidebar-section-label">Study</div>
+    <button class="nav-btn active" data-view="dashboard">
+      <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+      Dashboard
+    </button>
+    <button class="nav-btn" data-view="study">
+      <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+      Study Cards
+    </button>
+    <button class="nav-btn" data-view="browser">
+      <svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z"/></svg>
+      Card Browser
+    </button>
+    <button class="nav-btn" data-view="analytics">
+      <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+      Analytics
+    </button>
+
+    <button class="nav-btn" data-view="guide">
+      <svg viewBox="0 0 24 24"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"/></svg>
+      Study Guide
+    </button>
+
+    <div class="sidebar-section-label">Data</div>
+    <button class="nav-btn" data-view="settings">
+      <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+      Settings
+    </button>
+
+    <div class="sidebar-bottom">
+      <button class="theme-toggle" id="themeToggle" title="Toggle dark/light mode">
+        <svg class="icon-sun" viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-12.37l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0zM7.05 18.36l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06c.39-.39.39-1.03 0-1.41s-1.03 0-1.41 0z"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
+        <span class="theme-label">Dark Mode</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile nav toggle -->
+  <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="overlay" id="overlay"></div>
+
+  <!-- ═══ TOAST NOTIFICATION ═══ -->
+  <div class="toast hidden" id="toast">
+    <span class="toast-icon" id="toastIcon">🏆</span>
+    <div class="toast-body">
+      <div class="toast-title" id="toastTitle"></div>
+      <div class="toast-desc" id="toastDesc"></div>
+    </div>
+  </div>
+
+  <!-- ═══ MAIN CONTENT ═══ -->
+  <main class="main" id="main">
+
+    <!-- ─── DASHBOARD ─── -->
+    <div id="view-dashboard" class="view active">
+      <div class="view-header">
+        <h1 class="view-title">Dashboard</h1>
+        <p class="view-subtitle">Your R03 exam readiness at a glance</p>
+      </div>
+
+      <!-- Streak + Estimate bar -->
+      <div class="meta-bar" id="metaBar">
+        <div class="streak-display" id="streakDisplay">
+          <span class="streak-flame">🔥</span>
+          <span class="streak-count" id="streakCount">0</span>
+          <span class="streak-label">day streak</span>
+        </div>
+        <div class="estimate-display" id="estimateDisplay">
+          <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
+          <span id="estimateText">Calculate after studying more cards</span>
+        </div>
+      </div>
+
+      <!-- Pass Readiness Banner -->
+      <div class="readiness-banner" id="readinessBanner">
+        <div class="readiness-status">
+          <div class="readiness-badge" id="readinessBadge">Not Ready</div>
+          <div class="readiness-detail" id="readinessDetail">Complete more Tier 1 cards to improve your readiness.</div>
+        </div>
+        <div class="readiness-meter">
+          <div class="readiness-label">Tier 1 Mastery</div>
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" id="t1ProgressBar" style="width:0%"></div>
+          </div>
+          <div class="readiness-pct" id="t1Pct">0%</div>
+        </div>
+      </div>
+
+      <!-- Stats row -->
+      <div class="stats-grid stats-grid-5">
+        <div class="stat-card">
+          <div class="stat-value" id="statTotal">0</div>
+          <div class="stat-label">Total Cards</div>
+        </div>
+        <div class="stat-card stat-known">
+          <div class="stat-value" id="statKnown">0</div>
+          <div class="stat-label">Known</div>
+        </div>
+        <div class="stat-card stat-unknown">
+          <div class="stat-value" id="statUnknown">0</div>
+          <div class="stat-label">Still Learning</div>
+        </div>
+        <div class="stat-card stat-unseen">
+          <div class="stat-value" id="statUnseen">0</div>
+          <div class="stat-label">Not Yet Seen</div>
+        </div>
+        <div class="stat-card stat-pct">
+          <div class="stat-value" id="statPct">0%</div>
+          <div class="stat-label">Complete</div>
+        </div>
+      </div>
+
+      <!-- Exam Trap + Tier 1 -->
+      <div class="two-col-grid">
+        <div class="panel">
+          <h2 class="panel-title"><span class="panel-icon trap-icon">⚠</span>Exam Trap Performance</h2>
+          <div class="trap-stats">
+            <div class="mini-stat"><span id="trapKnown">0</span><span>Known</span></div>
+            <div class="mini-stat"><span id="trapUnknown">0</span><span>Unknown</span></div>
+            <div class="mini-stat"><span id="trapTotal">0</span><span>Total</span></div>
+          </div>
+          <div class="progress-bar-track mt-sm">
+            <div class="progress-bar-fill trap-fill" id="trapBar" style="width:0%"></div>
+          </div>
+          <div class="pct-label" id="trapPct">0% mastery</div>
+        </div>
+        <div class="panel">
+          <h2 class="panel-title"><span class="panel-icon tier-icon">★</span>Tier Mastery</h2>
+          <div class="tier-list" id="tierList"></div>
+        </div>
+      </div>
+
+      <!-- Recommendations -->
+      <div class="panel">
+        <h2 class="panel-title">
+          <svg class="panel-svg" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+          Study Recommendations
+        </h2>
+        <p class="panel-desc">Focus on these next to maximise your exam performance.</p>
+        <div class="reco-list" id="recoList"></div>
+        <button class="btn btn-primary mt-sm" data-view="study" data-mode="quick">Start Quick Pass Session →</button>
+      </div>
+
+      <!-- Section breakdown -->
+      <div class="panel">
+        <h2 class="panel-title">Performance by Section</h2>
+        <div class="section-breakdown" id="sectionBreakdown"></div>
+      </div>
+    </div>
+
+    <!-- ─── STUDY VIEW ─── -->
+    <div id="view-study" class="view">
+      <div id="study-mode-selector">
+        <div class="view-header">
+          <h1 class="view-title">Study Cards</h1>
+          <p class="view-subtitle">Choose a study mode to begin</p>
+        </div>
+        <div class="mode-grid">
+          <button class="mode-card" data-mode="all">
+            <div class="mode-icon">📚</div>
+            <div class="mode-name">Study All</div>
+            <div class="mode-desc">Every card in the deck</div>
+            <div class="mode-count" id="modeCountAll"></div>
+          </button>
+          <button class="mode-card" data-mode="unseen">
+            <div class="mode-icon">👁</div>
+            <div class="mode-name">Unseen Only</div>
+            <div class="mode-desc">Cards you haven't seen yet</div>
+            <div class="mode-count" id="unseenModeCount"></div>
+          </button>
+          <button class="mode-card" data-mode="unknown">
+            <div class="mode-icon">🔴</div>
+            <div class="mode-name">Unknown Only</div>
+            <div class="mode-desc">Cards not yet mastered</div>
+            <div class="mode-count" id="modeCountUnknown"></div>
+          </button>
+          <button class="mode-card" data-mode="least-seen">
+            <div class="mode-icon">👶</div>
+            <div class="mode-name">Least Seen</div>
+            <div class="mode-desc">Cards with fewest repetitions first</div>
+            <div class="mode-count" id="modeCountLeastSeen"></div>
+          </button>
+          <button class="mode-card" data-mode="struggled">
+            <div class="mode-icon">💪</div>
+            <div class="mode-name">Most Struggled</div>
+            <div class="mode-desc">Highest wrong-answer rate first</div>
+            <div class="mode-count" id="modeCountStruggled"></div>
+          </button>
+          <button class="mode-card" data-mode="tier1">
+            <div class="mode-icon">★</div>
+            <div class="mode-name">Tier 1 Essentials</div>
+            <div class="mode-desc">Essential pass knowledge only</div>
+            <div class="mode-count" id="modeCountTier1"></div>
+          </button>
+          <button class="mode-card" data-mode="traps">
+            <div class="mode-icon">⚠</div>
+            <div class="mode-name">Exam Traps</div>
+            <div class="mode-desc">Common mistakes &amp; trick areas</div>
+            <div class="mode-count" id="modeCountTraps"></div>
+          </button>
+          <button class="mode-card" data-mode="bookmarks">
+            <div class="mode-icon">🔖</div>
+            <div class="mode-name">Bookmarked</div>
+            <div class="mode-desc">Cards you've flagged for review</div>
+            <div class="mode-count" id="bookmarkModeCount"></div>
+          </button>
+          <button class="mode-card" data-mode="quick">
+            <div class="mode-icon">⚡</div>
+            <div class="mode-name">Quick Pass</div>
+            <div class="mode-desc">All not-yet-known cards</div>
+            <div class="mode-count" id="modeCountQuick"></div>
+          </button>
+          <button class="mode-card" data-mode="mock">
+            <div class="mode-icon">📝</div>
+            <div class="mode-name">Mock Exam</div>
+            <div class="mode-desc">Tier 1 + traps + unknowns</div>
+          </button>
+          <button class="mode-card mode-card-expand" id="btnBySection">
+            <div class="mode-icon">📂</div>
+            <div class="mode-name">By Section</div>
+            <div class="mode-desc">Study one syllabus section</div>
+          </button>
+          <button class="mode-card mode-card-expand" id="btnByDeck">
+            <div class="mode-icon">🗂</div>
+            <div class="mode-name">By Topic</div>
+            <div class="mode-desc">Study one specific topic</div>
+          </button>
+        </div>
+
+        <!-- Section submenu -->
+        <div class="submenu-panel hidden" id="sectionSubmenu">
+          <div class="submenu-header">
+            <button class="btn btn-ghost btn-sm" id="closeSectionSubmenu">← Back</button>
+            <span class="submenu-title">Choose a Section</span>
+          </div>
+          <div class="submenu-list" id="sectionList"></div>
+        </div>
+
+        <!-- Deck submenu -->
+        <div class="submenu-panel hidden" id="deckSubmenu">
+          <div class="submenu-header">
+            <button class="btn btn-ghost btn-sm" id="closeDeckSubmenu">← Back</button>
+            <span class="submenu-title">Choose a Topic</span>
+          </div>
+          <div class="submenu-list" id="deckList"></div>
+        </div>
+      </div>
+
+      <!-- Active study session -->
+      <div id="study-session" class="hidden">
+        <div class="session-header">
+          <button class="btn btn-ghost btn-sm" id="exitSession">← Back</button>
+          <div class="session-meta">
+            <span id="sessionMode" class="session-tag"></span>
+            <span id="sessionProgress" class="session-progress"></span>
+          </div>
+          <div class="session-stats-mini">
+            <span class="streak-inline hidden" id="sessionStreak">🔥 0</span>
+            <span class="known-count" id="sessionKnown">0 known</span>
+            <span class="unknown-count" id="sessionUnknown">0 remaining</span>
+          </div>
+          <button class="btn btn-ghost btn-sm btn-undo hidden" id="btnUndo" title="Undo last decision (U)">
+            <svg viewBox="0 0 24 24"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
+            Undo <kbd>U</kbd>
+          </button>
+        </div>
+
+        <div class="session-progress-bar">
+          <div class="session-progress-fill" id="sessionProgressFill" style="width:0%"></div>
+        </div>
+
+        <div class="study-layout">
+          <!-- Left: flashcard column -->
+          <div class="study-main-col">
+            <!-- Flashcard with flip -->
+            <div class="card-container" id="cardContainer">
+              <div class="card-scene">
+                <div class="flashcard" id="flashcard" role="button" tabindex="0" aria-label="Click to reveal answer">
+                  <!-- Front -->
+                  <div class="card-face card-front">
+                    <div class="card-meta" id="cardMeta"></div>
+                    <div class="card-question" id="cardQuestion"></div>
+                    <div class="card-actions-row">
+                      <button class="btn-bookmark-card" id="btnBookmarkCard" title="Bookmark this card (B)">
+                        <svg id="bookmarkIcon" viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
+                      </button>
+                      <div class="card-reveal-hint" id="revealHint">
+                        <span>Click to reveal</span><kbd>Space</kbd>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Back -->
+                  <div class="card-face card-back">
+                    <div class="card-meta-back" id="cardMetaBack"></div>
+                    <div class="card-question-back" id="cardQuestionBack"></div>
+                    <div class="card-answer" id="cardAnswer"></div>
+                    <button class="btn-show-explain" id="btnShowExplain" type="button">
+                      <svg viewBox="0 0 24 24"><path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"/></svg>
+                      Show explanation
+                    </button>
+                    <div class="card-explain hidden" id="cardExplain"></div>
+                    <button class="btn-edit-card" id="btnEditCard" title="Edit this card (E)">
+                      <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                      Edit card
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="card-actions hidden" id="cardActions">
+              <button class="btn btn-dont-know" id="btnDontKnow">
+                <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                Don't Know <kbd>D</kbd>
+              </button>
+              <button class="btn btn-know" id="btnKnow">
+                <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                Know <kbd>K</kbd>
+              </button>
+            </div>
+
+            <!-- Session complete -->
+            <div class="session-complete hidden" id="sessionComplete">
+              <div class="complete-icon" id="completeIcon">🎉</div>
+              <h2 class="complete-title">Session Complete!</h2>
+              <p class="complete-subtitle" id="completeSubtitle"></p>
+              <div class="complete-stats" id="completeStats"></div>
+              <!-- Weak cards from this session -->
+              <div class="session-weak-panel" id="sessionWeakPanel">
+                <h3 class="session-weak-title">Cards to revisit</h3>
+                <div class="session-weak-list" id="sessionWeakList"></div>
+              </div>
+              <div class="complete-actions">
+                <button class="btn btn-primary" id="restartSession">Study Again</button>
+                <button class="btn btn-ghost" id="btnGoToDashboard">Back to Dashboard</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: live stats sidebar (desktop only) -->
+          <aside class="study-side-col" id="studySideCol">
+            <div class="side-panel">
+              <div class="side-panel-title">Tier 1 Mastery</div>
+              <div class="side-ring-wrap">
+                <canvas id="sideTier1Ring" width="92" height="92"></canvas>
+                <div class="side-ring-label" id="sideTier1Label">0%</div>
+              </div>
+              <div class="side-panel-sub" id="sideTier1Sub">0 / 0 cards</div>
+            </div>
+
+            <div class="side-panel">
+              <div class="side-panel-title">⚠ Exam Trap Mastery</div>
+              <div class="progress-bar-track">
+                <div class="progress-bar-fill trap-fill" id="sideTrapBar" style="width:0%"></div>
+              </div>
+              <div class="side-panel-sub" id="sideTrapSub">0 / 0 known</div>
+            </div>
+
+            <div class="side-panel">
+              <div class="side-panel-title">This Session</div>
+              <div class="side-session-stats">
+                <div class="side-stat">
+                  <span class="side-stat-num" id="sideSessionKnown">0</span>
+                  <span class="side-stat-label">Known</span>
+                </div>
+                <div class="side-stat">
+                  <span class="side-stat-num" id="sideSessionStreak">0</span>
+                  <span class="side-stat-label">Streak</span>
+                </div>
+                <div class="side-stat">
+                  <span class="side-stat-num" id="sideSessionRemaining">0</span>
+                  <span class="side-stat-label">Left</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="side-panel">
+              <div class="side-panel-title">Weakest Decks</div>
+              <div class="side-deck-list" id="sideDeckList"></div>
+            </div>
+
+            <div class="side-panel side-readiness-panel">
+              <div class="side-panel-title">Pass Readiness</div>
+              <div class="side-readiness-badge" id="sideReadinessBadge">Not Ready</div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── CARD BROWSER VIEW ─── -->
+    <div id="view-browser" class="view">
+      <div class="view-header">
+        <h1 class="view-title">Card Browser</h1>
+        <p class="view-subtitle">Browse, search and filter all 165 cards</p>
+      </div>
+
+      <!-- Search + filters -->
+      <div class="browser-controls panel">
+        <div class="search-wrap">
+          <svg class="search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+          <input type="text" id="browserSearch" class="search-input" placeholder="Search questions and answers…" autocomplete="off" />
+          <button class="search-clear hidden" id="searchClear">×</button>
+        </div>
+        <div class="browser-filters">
+          <select id="filterStatus" class="filter-select">
+            <option value="all">All status</option>
+            <option value="unseen">Unseen</option>
+            <option value="unknown">Unknown</option>
+            <option value="known">Known</option>
+            <option value="bookmarked">Bookmarked</option>
+          </select>
+          <select id="filterTier" class="filter-select">
+            <option value="all">All tiers</option>
+            <option value="Tier 1">Tier 1</option>
+            <option value="Tier 2">Tier 2</option>
+            <option value="Tier 3">Tier 3</option>
+          </select>
+          <select id="filterCategory" class="filter-select">
+            <option value="all">All categories</option>
+            <option value="Common Exam Trap">Exam Traps</option>
+            <option value="Tax Rule">Tax Rule</option>
+            <option value="Calculation">Calculation</option>
+            <option value="Comparison">Comparison</option>
+            <option value="Process">Process</option>
+            <option value="Definition">Definition</option>
+            <option value="Principle">Principle</option>
+            <option value="Exception">Exception</option>
+          </select>
+          <select id="filterSection" class="filter-select">
+            <option value="all">All sections</option>
+          </select>
+        </div>
+        <div class="browser-result-count" id="browserResultCount">165 cards</div>
+      </div>
+
+      <!-- Card list -->
+      <div class="browser-list" id="browserList"></div>
+
+      <!-- Card detail panel (slide-in) -->
+      <div class="card-detail-backdrop hidden" id="cardDetailBackdrop">
+        <div class="card-detail-panel" id="cardDetailPanel">
+          <div class="card-detail-header">
+            <div class="card-detail-meta" id="cardDetailMeta"></div>
+            <div class="card-detail-actions">
+              <button class="btn-bookmark-detail" id="btnBookmarkDetail" title="Bookmark">
+                <svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
+              </button>
+              <button class="btn-edit-detail" id="btnEditDetail" title="Edit card">
+                <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+              </button>
+              <button class="card-detail-close" id="cardDetailClose">×</button>
+            </div>
+          </div>
+          <div class="card-detail-seen-badge" id="cardDetailSeenBadge"></div>
+          <div class="card-detail-question" id="cardDetailQuestion"></div>
+          <div class="card-detail-divider"></div>
+          <div class="card-detail-answer" id="cardDetailAnswer"></div>
+          <div class="card-detail-explain-label">Explanation</div>
+          <div class="card-detail-explain" id="cardDetailExplain"></div>
+          <div class="card-detail-status-row">
+            <button class="btn btn-sm btn-ghost" id="detailMarkUnknown">Mark Unknown</button>
+            <button class="btn btn-sm btn-know" id="detailMarkKnown">Mark Known</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── ANALYTICS VIEW ─── -->
+    <div id="view-analytics" class="view">
+      <div class="view-header">
+        <h1 class="view-title">Analytics</h1>
+        <p class="view-subtitle">Deep dive into your performance</p>
+      </div>
+
+      <div class="analytics-top">
+        <div class="panel donut-panel">
+          <h2 class="panel-title">Overall Completion</h2>
+          <div class="donut-wrap">
+            <canvas id="donutChart" width="200" height="200"></canvas>
+            <div class="donut-center">
+              <div class="donut-pct" id="donutPct">0%</div>
+              <div class="donut-sub">complete</div>
+            </div>
+          </div>
+          <div class="donut-legend">
+            <div class="legend-item"><span class="dot dot-known"></span>Known</div>
+            <div class="legend-item"><span class="dot dot-unknown"></span>Unknown</div>
+            <div class="legend-item"><span class="dot dot-unseen"></span>Unseen</div>
+          </div>
+        </div>
+        <div class="panel">
+          <h2 class="panel-title">Tier Performance</h2>
+          <div class="tier-bars" id="tierBars"></div>
+          <h2 class="panel-title mt-md">Category Performance</h2>
+          <div class="cat-bars" id="catBars"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2 class="panel-title">Section Breakdown</h2>
+        <div class="analytics-table-wrap">
+          <table class="analytics-table">
+            <thead>
+              <tr>
+                <th>Section</th><th>Total</th><th>Known</th><th>Unknown</th><th>Unseen</th><th>Mastery</th>
+              </tr>
+            </thead>
+            <tbody id="analyticsTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2 class="panel-title">Times Seen Distribution</h2>
+        <p class="panel-desc">How many cards have you seen 0, 1, 2, 3+ times?</p>
+        <div class="seen-dist-bars" id="seenDistBars"></div>
+      </div>
+
+      <div class="panel">
+        <h2 class="panel-title">Weakest Areas</h2>
+        <p class="panel-desc">Cards you've answered incorrectly most often.</p>
+        <div class="weak-list" id="weakList"></div>
+      </div>
+    </div>
+
+    <!-- ─── STUDY GUIDE VIEW ─── -->
+    <div id="view-guide" class="view view-fullbleed">
+      <div class="guide-shell">
+        <!-- Sticky section nav -->
+        <aside class="guide-nav" id="guideNav">
+          <div class="guide-nav-head">
+            <span class="guide-nav-title">Contents</span>
+            <button class="guide-nav-toggle" id="guideNavToggle" aria-label="Toggle contents">
+              <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+            </button>
+          </div>
+          <div class="guide-nav-scroll" id="guideNavList"></div>
+          <div class="guide-nav-foot">
+            <div class="guide-read-label">Reading progress</div>
+            <div class="guide-read-track"><div class="guide-read-fill" id="guideReadFill"></div></div>
+          </div>
+        </aside>
+
+        <!-- Content -->
+        <div class="guide-content" id="guideContent">
+          <div class="guide-hero">
+            <div class="guide-hero-eyebrow">CII R03 · 2025/26</div>
+            <h1 class="guide-hero-title">Personal Taxation</h1>
+            <p class="guide-hero-sub">A working revision guide. Everything examinable, nothing padded — written to be understood rather than memorised.</p>
+            <div class="guide-hero-meta">
+              <span>12 sections</span><span class="dot-sep">·</span>
+              <span>Worked examples throughout</span><span class="dot-sep">·</span>
+              <span>2025/26 rates</span>
+            </div>
+          </div>
+          <div id="guideBody"></div>
+        </div>
+      </div>
+      <button class="guide-top-btn hidden" id="guideTopBtn" aria-label="Back to top">
+        <svg viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
+      </button>
+    </div>
+
+    <!-- ─── SETTINGS VIEW ─── -->
+    <div id="view-settings" class="view">
+      <div class="view-header">
+        <h1 class="view-title">Settings</h1>
+        <p class="view-subtitle">Manage your data and preferences</p>
+      </div>
+      <div class="settings-grid">
+        <div class="panel">
+          <h2 class="panel-title">Account &amp; Sync</h2>
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-name" id="settingsAccountName">Not signed in</div>
+              <div class="setting-desc" id="settingsAccountDesc">Sign in to sync progress across all your devices</div>
+            </div>
+            <button class="btn btn-secondary" id="settingsAuthBtn">Sign In</button>
+          </div>
+          <div class="sync-info-row" id="syncInfoRow">
+            <span class="sync-dot" id="syncDot"></span>
+            <span id="syncInfoText">Not connected to cloud</span>
+          </div>
+        </div>
+        <div class="panel">
+          <h2 class="panel-title">Data Management</h2>
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-name">Export Progress</div>
+              <div class="setting-desc">Download your study progress as JSON</div>
+            </div>
+            <button class="btn btn-secondary" id="exportBtn">Export</button>
+          </div>
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-name">Import Progress</div>
+              <div class="setting-desc">Restore progress from a JSON file</div>
+            </div>
+            <label class="btn btn-secondary" for="importFile">Import
+              <input type="file" id="importFile" accept=".json" class="hidden" />
+            </label>
+          </div>
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-name">Restore Saved Baseline</div>
+              <div class="setting-desc" id="seedBaselineDesc">Reset to the built-in progress snapshot</div>
+            </div>
+            <button class="btn btn-secondary" id="restoreSeedBtn">Restore</button>
+          </div>
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-name">Reset All Progress</div>
+              <div class="setting-desc">Clear all study data and start fresh</div>
+            </div>
+            <button class="btn btn-danger" id="resetAllBtn">Reset All</button>
+          </div>
+        </div>
+        <div class="panel">
+          <h2 class="panel-title">Reset by Deck</h2>
+          <p class="panel-desc">Reset progress for a specific deck only.</p>
+          <div class="deck-reset-list" id="deckResetList"></div>
+        </div>
+        <div class="panel">
+          <h2 class="panel-title">Keyboard Shortcuts</h2>
+          <div class="shortcuts-list">
+            <div class="shortcut"><kbd>Space</kbd><span>Reveal answer</span></div>
+            <div class="shortcut"><kbd>K</kbd><span>Mark as Know</span></div>
+            <div class="shortcut"><kbd>D</kbd><span>Mark as Don't Know</span></div>
+            <div class="shortcut"><kbd>U</kbd><span>Undo last decision</span></div>
+            <div class="shortcut"><kbd>B</kbd><span>Bookmark card</span></div>
+            <div class="shortcut"><kbd>E</kbd><span>Edit card (when answer visible)</span></div>
+            <div class="shortcut"><kbd>N</kbd><span>Next card</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Edit card modal -->
+  <div class="modal-backdrop hidden" id="editModalBackdrop">
+    <div class="modal edit-modal" role="dialog" aria-modal="true">
+      <div class="edit-modal-header">
+        <h3 class="modal-title">Edit Card</h3>
+        <div class="edit-modal-meta" id="editModalMeta"></div>
+      </div>
+      <div class="edit-field">
+        <label class="edit-label">Question</label>
+        <textarea class="edit-textarea" id="editQ" rows="3" placeholder="Question text…"></textarea>
+      </div>
+      <div class="edit-field">
+        <label class="edit-label">Answer</label>
+        <textarea class="edit-textarea" id="editA" rows="6" placeholder="Answer text…"></textarea>
+      </div>
+      <div class="edit-field">
+        <label class="edit-label">Explanation</label>
+        <textarea class="edit-textarea" id="editExplain" rows="5" placeholder="Explanation text…"></textarea>
+      </div>
+      <div class="edit-modal-actions">
+        <button class="btn btn-ghost btn-sm" id="editResetBtn">↩ Reset to original</button>
+        <div class="edit-modal-right">
+          <button class="btn btn-ghost" id="editCancelBtn">Cancel</button>
+          <button class="btn btn-primary" id="editSaveBtn">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm modal -->
+  <div class="modal-backdrop hidden" id="modalBackdrop">
+    <div class="modal" role="dialog" aria-modal="true">
+      <h3 class="modal-title" id="modalTitle">Are you sure?</h3>
+      <p class="modal-body" id="modalBody"></p>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="modalCancel">Cancel</button>
+        <button class="btn btn-danger" id="modalConfirm">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
